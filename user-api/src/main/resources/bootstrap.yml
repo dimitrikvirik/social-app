@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: user-api
+  cloud:
+    config:
+      uri:  ${CONFIG_SERVER}
+

@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: eureka-api
+  cloud:
+    config:
+      uri:  ${CONFIG_SERVER}

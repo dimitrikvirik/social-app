@@ -1,0 +1,15 @@
+version: "3.7"
+secrets:
+  mysecret:
+    file: ./config/application.yml
+
+services:
+  config:
+    image: config-api:1.0.0
+    ports:
+      - 8081:8081
+    environment:
+      - SERVER_PORT=8081
+    secrets:
+      - mysecret
+
