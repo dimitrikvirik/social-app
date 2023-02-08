@@ -15,6 +15,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        gradlePluginPortal()
         maven { url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates' }
     }
 
