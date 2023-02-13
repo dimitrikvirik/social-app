@@ -7,7 +7,11 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
-
+java {
+    toolchain {
+        implementation = JvmImplementation.J9
+    }
+}
 
 tasks.named('test') {
     useJUnitPlatform()
