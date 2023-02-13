@@ -1,6 +1,8 @@
 rootProject.name = 'social-app'
 
+include ':common'
 include ':config-api'
 include ':eureka-api'
 include ':gateway-api'
 include ':user-api'
+

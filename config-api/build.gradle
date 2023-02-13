@@ -1,13 +1,11 @@
-
+plugins{
+    id 'org.graalvm.buildtools.native' version '0.9.14'
+}
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-bootBuildImage {
-
-    buildpacks = ["gcr.io/paketo-buildpacks/java-native-image:7.19.0"]
 }
 
 

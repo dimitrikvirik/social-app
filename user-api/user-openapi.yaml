@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: User API
+  description: User Api
+  version: 1.0.0
+
+paths:
+  /test:
+    get:
+      summary: Test
+      description: Test
+      operationId: test
+      tags:
+        - Test
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+
+components:
+  schemas:
+    TestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+  
