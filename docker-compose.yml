@@ -1,17 +1,17 @@
-version: "3.7"
+version: "3.9"
 secrets:
   mysecret:
     file: ./config/application.yml
 networks:
   social-net:
-    driver: bridge
+    external: true
 services:
   postgres:
     image: postgres:latest
     networks:
       - social-net
     ports:
-      - 5432:5432
+       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
