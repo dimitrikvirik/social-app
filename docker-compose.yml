@@ -6,7 +6,7 @@ services:
   postgres:
     image: postgres:latest
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -28,7 +28,7 @@ services:
   config:
     image: config-api:1.0.0
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       - SERVER_PORT=8081
   eureka:
@@ -43,7 +43,7 @@ services:
   gateway:
     image: gateway:1.0.0
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
       - CONFIG_SERVER=config
       - SPRING_PROFILES_ACTIVE=docker
@@ -52,7 +52,7 @@ services:
   user:
     image: user-api:1.0.0
     ports:
-      - 8082:8082
+      - "8082:8082"
     environment:
       - CONFIG_SERVER=config
       - SPRING_PROFILES_ACTIVE=docker
