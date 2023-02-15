@@ -21,6 +21,9 @@ public class User {
 	@Column(name = "keycloak_id")
 	private String keycloakId;
 
+	@Column(name = "profile")
+	private String profile;
+
 	@Column(name = "firstname")
 	private String firstname;
 

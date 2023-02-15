@@ -46,6 +46,7 @@ services:
       - 8761:8761
     environment:
       - CONFIG_SERVER=config
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - config
   gateway:
