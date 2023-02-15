@@ -27,7 +27,7 @@ services:
       - KEYCLOAK_PASSWORD=admin
       - DB_VENDOR=POSTGRES
       - DB_ADDR=postgres
-      - DB_DATABASE=postgres
+      - DB_DATABASE=keycloak
       - DB_USER=postgres
       - DB_PASSWORD=postgres
   config:
