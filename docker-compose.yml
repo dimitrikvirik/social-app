@@ -2,14 +2,72 @@ version: "3.7"
 secrets:
   mysecret:
     file: ./config/application.yml
-
+networks:
+  default:
+    external:
+      name: social-net
 services:
+  postgres:
+    image: postgres:latest
+    networks:
+      - social-net
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+  keycloak:
+    image: jboss/keycloak:latest
+    networks:
+      - social-net
+    ports:
+      - 7001:8080
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=postgres
+      - DB_DATABASE=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
   config:
     image: config-api:1.0.0
+    networks:
+      - social-net
     ports:
       - 8081:8081
     environment:
       - SERVER_PORT=8081
-    secrets:
-      - mysecret
-
+  eureka:
+    image: eureka:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8761:8761
+    environment:
+      - CONFIG_SERVER=config
+    depends_on:
+      - config
+  gateway:
+    image: gateway:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8080:8080
+    environment:
+      - CONFIG_SERVER=config
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+  user:
+    image: user-api:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8082:8082
+    environment:
+      - CONFIG_SERVER=config
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - gateway
