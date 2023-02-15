@@ -3,9 +3,8 @@ secrets:
   mysecret:
     file: ./config/application.yml
 networks:
-  default:
-    external:
-      name: social-net
+  social-net:
+    driver: bridge
 services:
   postgres:
     image: postgres:latest
