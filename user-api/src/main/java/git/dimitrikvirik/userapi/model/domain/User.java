@@ -14,9 +14,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User {
 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	@Id
 	private String id;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_pref_id", referencedColumnName = "id")
+	private UserPref userPref;
 
 	@Column(name = "keycloak_id")
 	private String keycloakId;
@@ -34,10 +38,10 @@ public class User {
 	private String email;
 
 	@Column(name = "is_disabled")
-	private Boolean isDisabled;
+	private Boolean isDisabled = false;
 
 	@Column(name = "is_blocked")
-	private Boolean isBlocked;
+	private Boolean isBlocked = false;
 
 
 }
