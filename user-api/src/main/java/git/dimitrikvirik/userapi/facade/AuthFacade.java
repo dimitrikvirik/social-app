@@ -1,14 +1,16 @@
 package git.dimitrikvirik.userapi.facade;
 
-import git.dimitrikvirik.user.model.*;
+import git.dimitrikvirik.userapi.model.*;
+import git.dimitrikvirik.userapi.model.EmailValidationRequest;
+import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
+import git.dimitrikvirik.userapi.model.LoginRequest;
+import git.dimitrikvirik.userapi.model.LoginResponse;
+import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
-import git.dimitrikvirik.userapi.model.redis.EmailCode;
 import git.dimitrikvirik.userapi.service.EmailCodeService;
 import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.CredentialRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -48,7 +50,7 @@ public class AuthFacade {
 		return null;
 	}
 
-	public void register(RegisterRequest registerRequest) {
+	public void register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {
 		emailCodeService.check(registerRequest.getEmail(), registerRequest.getEmailCode(), EmailValidationRequest.TypeEnum.REGISTER);
 		User user = new User();
 		user.setEmail(registerRequest.getEmail());

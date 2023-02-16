@@ -1,12 +1,16 @@
 package git.dimitrikvirik.userapi.controller;
 
-import git.dimitrikvirik.user.api.AuthApi;
-import git.dimitrikvirik.user.model.*;
+import git.dimitrikvirik.userapi.api.AuthApi;
 import git.dimitrikvirik.userapi.facade.AuthFacade;
+import git.dimitrikvirik.userapi.model.*;
+import git.dimitrikvirik.userapi.model.EmailValidationRequest;
+import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
+import git.dimitrikvirik.userapi.model.LoginRequest;
+import git.dimitrikvirik.userapi.model.LoginResponse;
+import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,7 +37,7 @@ public class AuthController implements AuthApi {
 	}
 
 	@Override
-	public ResponseEntity<Void> register(RegisterRequest registerRequest) {
+	public ResponseEntity<Void> register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {
 		authFacade.register(registerRequest);
 		return ResponseEntity.ok().build();
 	}

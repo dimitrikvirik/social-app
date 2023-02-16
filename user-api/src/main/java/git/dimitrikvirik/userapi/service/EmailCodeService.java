@@ -1,6 +1,6 @@
 package git.dimitrikvirik.userapi.service;
 
-import git.dimitrikvirik.user.model.EmailValidationRequest;
+import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.redis.EmailCode;
 import git.dimitrikvirik.userapi.repository.EmailCodeRepository;
 import lombok.RequiredArgsConstructor;

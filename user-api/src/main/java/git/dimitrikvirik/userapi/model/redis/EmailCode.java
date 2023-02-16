@@ -1,6 +1,7 @@
 package git.dimitrikvirik.userapi.model.redis;
 
-import git.dimitrikvirik.user.model.EmailValidationRequest;
+
+import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

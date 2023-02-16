@@ -8,7 +8,7 @@ paths:
   /auth/login:
     post:
       tags:
-        - auth
+        - Auth
       summary: Login
       description: Login
       operationId: login
@@ -52,7 +52,7 @@ paths:
   /auth/register:
     post:
       tags:
-        - auth
+        - Auth
       summary: Register
       description: Register
       operationId: register
@@ -85,7 +85,7 @@ paths:
   /auth/validation:
     post:
       tags:
-        - auth
+        - Auth
       summary: Email Validation
       description: Email Validation
       operationId: emailValidation
@@ -118,7 +118,7 @@ paths:
   /auth/forget-password:
     post:
       tags:
-        - auth
+        - Auth
       summary: Forget Password
       description: Forget Password
       operationId: forgetPassword
@@ -151,7 +151,7 @@ paths:
   /auth/restore-account:
     post:
       tags:
-        - auth
+        - Auth
       summary: Restore Account
       description: Restore Account
       operationId: restoreAccount
@@ -191,7 +191,7 @@ paths:
   /user/{id}:
     get:
       tags:
-        - user
+        - User
       summary: Get User
       description: Get User
       operationId: getUser
@@ -235,7 +235,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
       tags:
-        - user
+        - User
       summary: Update User
       description: Update User
       operationId: updateUser
@@ -290,7 +290,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       tags:
-        - user
+        - User
       summary: Delete User
       parameters:
         - name: id
@@ -326,7 +326,7 @@ paths:
   /user/{id}/block:
     post:
       tags:
-        - user
+        - User
       summary: Block User
       description: Block User
       operationId: blockUser
@@ -377,7 +377,7 @@ paths:
   /user/{id}/unblock:
     post:
       tags:
-        - user
+        - User
       summary: Unblock User
       description: Unblock User
       operationId: unblockUser

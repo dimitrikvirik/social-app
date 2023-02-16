@@ -17,13 +17,15 @@ public class KeycloakConfig {
 	@Value("${keycloak.resource}")
 	private String clientId;
 
-	@Value("${keycloak.credentials.secret}")
+	@Value("${keycloak.secret}")
 	private String clientSecret;
 
 	@Bean
 	public Keycloak keycloak() {
 		return KeycloakBuilder.builder()
 				.serverUrl(keycloakServerUrl)
+				.username("admin")
+				.password("admin")
 				.realm(realm)
 				.clientId(clientId)
 				.clientSecret(clientSecret)
