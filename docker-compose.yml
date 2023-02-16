@@ -39,7 +39,7 @@ services:
     environment:
       - SERVER_PORT=8081
       - GITHUB_USER=dimitrikvirik
-      - GITHUB_PASSWORD=./conf.d/github.token
+      - GITHUB_TOKEN=./conf.d/github.token
     secrets:
       - mysecrets
   eureka:
