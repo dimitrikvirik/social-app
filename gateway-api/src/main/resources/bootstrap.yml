@@ -4,19 +4,4 @@ spring:
   cloud:
     config:
       uri:  ${CONFIG_SERVER}
-springdoc:
-  swagger-ui:
-    urls:
-      - name: user-api
-        url: /user/api-docs
-      - name: social-api
-        url: /social/api-docs
-      - name: payment-api
-        url: /payment/api-docs
-    oauth:
-      realm: master
-      client-secret: nIMIPRDpRTRUoj7VpcJOBrhKgqp73YSB
-      client-id: social
-      app-name: keycloak
-      oauth2-redirect-url: http://localhost:8080/oauth2-redirect.html
 
