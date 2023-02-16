@@ -1,7 +1,7 @@
 version: "3.9"
 secrets:
   mysecrets:
-    file: ./secret.env
+    file: ./.env
 networks:
   social-net:
     external: true
@@ -38,6 +38,8 @@ services:
       - 8081:8081
     environment:
       - SERVER_PORT=8081
+      - GITHUB_USER=dimitrikvirik
+      - GITHUB_PASSWORD=./conf.d/github.token
     secrets:
       - mysecrets
   eureka:
