@@ -12,10 +12,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.0.2'
-
-
     implementation 'org.postgresql:postgresql:42.5.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
     implementation 'org.keycloak:keycloak-spring-boot-starter:20.0.3'
