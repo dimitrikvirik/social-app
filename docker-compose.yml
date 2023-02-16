@@ -30,6 +30,14 @@ services:
       DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
+  redis:
+    image: redis:latest
+    networks:
+      - social-net
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=redis
   config:
     image: config-api:1.0.0
     networks:
