@@ -49,7 +49,7 @@ services:
     ports:
       - 8761:8761
     environment:
-      - CONFIG_SERVER=http://config
+      - CONFIG_SERVER=http://config:8081
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - config
