@@ -43,7 +43,7 @@ services:
     secrets:
       - mysecrets
   eureka:
-    image: eureka:1.0.0
+    image: eureka-api:1.0.0
     networks:
       - social-net
     ports:
@@ -54,7 +54,7 @@ services:
     depends_on:
       - config
   gateway:
-    image: gateway:1.0.0
+    image: gateway-api:1.0.0
     networks:
       - social-net
     ports:
