@@ -1,7 +1,7 @@
 version: "3.9"
 secrets:
-  mysecret:
-    file: ./config/application.yml
+  mysecrets:
+    file: ./secret.env
 networks:
   social-net:
     external: true
@@ -38,6 +38,8 @@ services:
       - 8081:8081
     environment:
       - SERVER_PORT=8081
+    secrets:
+      - mysecrets
   eureka:
     image: eureka:1.0.0
     networks:
