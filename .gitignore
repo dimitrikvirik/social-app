@@ -32,7 +32,7 @@ cmake-build-*/
 *.iws
 
 ./config/
-./secret.env
+./.env
 
 
 # IntelliJ
