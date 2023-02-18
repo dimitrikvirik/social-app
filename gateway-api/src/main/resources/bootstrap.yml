@@ -4,4 +4,3 @@ spring:
   cloud:
     config:
       uri:  ${CONFIG_SERVER}
-

@@ -3,6 +3,8 @@ package git.dimitrikvirik.userapi.controller;
 import git.dimitrikvirik.userapi.api.AuthApi;
 import git.dimitrikvirik.userapi.facade.AuthFacade;
 import git.dimitrikvirik.userapi.model.*;
+import git.dimitrikvirik.userapi.model.EmailValidationApproveRequest;
+import git.dimitrikvirik.userapi.model.EmailValidationApproveResponse;
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
 import git.dimitrikvirik.userapi.model.LoginRequest;
@@ -23,6 +25,11 @@ public class AuthController implements AuthApi {
 	public ResponseEntity<Void> emailValidation(EmailValidationRequest emailValidationRequest) {
 		authFacade.emailValidation(emailValidationRequest);
 		return ResponseEntity.ok().build();
+	}
+
+	@Override
+	public ResponseEntity<EmailValidationApproveResponse> emailValidationApprove(EmailValidationApproveRequest emailValidationApproveRequest) {
+		return new ResponseEntity<>(authFacade.emailValidationApprove(emailValidationApproveRequest), HttpStatus.OK);
 	}
 
 	@Override

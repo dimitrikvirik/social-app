@@ -1,13 +1,18 @@
 package git.dimitrikvirik.userapi.facade;
 
 import git.dimitrikvirik.userapi.model.*;
+import git.dimitrikvirik.userapi.model.EmailValidationApproveRequest;
+import git.dimitrikvirik.userapi.model.EmailValidationApproveResponse;
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
 import git.dimitrikvirik.userapi.model.LoginRequest;
 import git.dimitrikvirik.userapi.model.LoginResponse;
 import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
+import git.dimitrikvirik.userapi.model.enums.EmailType;
+import git.dimitrikvirik.userapi.model.redis.EmailHash;
 import git.dimitrikvirik.userapi.service.EmailCodeService;
+import git.dimitrikvirik.userapi.service.EmailHashService;
 import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,7 @@ public class AuthFacade {
 	private final UserService userService;
 	private final EmailCodeService emailCodeService;
 
+	private final EmailHashService emailHashService;
 	private final KeycloakService keycloakService;
 
 	public void emailValidation(EmailValidationRequest emailValidationRequest) {
@@ -31,7 +37,7 @@ public class AuthFacade {
 		if (emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.REGISTER) &&
 				userService.existsByEmail(emailValidationRequest.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists");
-		} else if (!userService.existsByEmail(emailValidationRequest.getEmail())) {
+		} else if (!emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.REGISTER) && !userService.existsByEmail(emailValidationRequest.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email not found");
 		}
 
@@ -39,11 +45,8 @@ public class AuthFacade {
 	}
 
 	public void forgetPassword(ForgetPasswordRequest forgetPasswordRequest) {
-		emailCodeService.check(forgetPasswordRequest.getEmail(), forgetPasswordRequest.getEmailCode(), EmailValidationRequest.TypeEnum.RESETPASSWORD);
-		User user = userService.findByEmail(forgetPasswordRequest.getEmail()).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User by email not found")
-		);
-		keycloakService.resetPassword(user.getKeycloakId(), forgetPasswordRequest.getPassword());
+
+
 	}
 
 	public LoginResponse login(LoginRequest loginRequest) {
@@ -51,9 +54,12 @@ public class AuthFacade {
 	}
 
 	public void register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {
-		emailCodeService.check(registerRequest.getEmail(), registerRequest.getEmailCode(), EmailValidationRequest.TypeEnum.REGISTER);
+		EmailHash emailHash = emailHashService.getById(registerRequest.getEmailHash());
+		if (!emailHash.getType().equals(EmailType.REGISTER))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email hash is not for register");
+
 		User user = new User();
-		user.setEmail(registerRequest.getEmail());
+		user.setEmail(emailHash.getEmail());
 		user.setFirstname(registerRequest.getFirstName());
 		user.setLastname(registerRequest.getLastName());
 		user.setIsDisabled(false);
@@ -66,5 +72,17 @@ public class AuthFacade {
 
 	public void restoreAccount(RestoreAccountRequest restoreAccountRequest) {
 
+	}
+
+	public EmailValidationApproveResponse emailValidationApprove(EmailValidationApproveRequest emailValidationApproveRequest) {
+		EmailType emailType = EmailType.valueOf(emailValidationApproveRequest.getType().name());
+		emailCodeService.check(emailValidationApproveRequest.getEmail(), emailValidationApproveRequest.getEmailCode(), emailType);
+		EmailHash emailHash = emailHashService.save(emailValidationApproveRequest.getEmail(), emailType);
+		emailCodeService.delete(emailValidationApproveRequest.getEmail());
+
+		return EmailValidationApproveResponse
+				.builder()
+				.emailHash(emailHash.getId())
+				.build();
 	}
 }

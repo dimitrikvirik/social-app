@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "users")
@@ -14,8 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User {
 
-	@GeneratedValue
-	@Id
+	@Id @GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	private String id;
 
 	@OneToOne(cascade = CascadeType.ALL)

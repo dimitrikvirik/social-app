@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "user_pref")
@@ -14,8 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserPref {
 
-	@Id
-	@GeneratedValue
+	@Id @GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	private String id;
 
 	@Column(name = "comment_notification_enabled")

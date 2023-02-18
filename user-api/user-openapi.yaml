@@ -115,6 +115,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /auth/validation-approve:
+    post:
+      tags:
+        - Auth
+      summary: Email Validation Approve
+      description: Email Validation Approve
+      operationId: emailValidationApprove
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailValidationApproveRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailValidationApproveResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /auth/forget-password:
     post:
       tags:
@@ -466,10 +498,7 @@ components:
     RegisterRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        emailCode:
+        emailHash:
           type: string
         password:
           type: string
@@ -494,10 +523,7 @@ components:
     PasswordResetRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        emailCode:
+        emailHash:
           type: string
         password:
           type: string
@@ -505,10 +531,7 @@ components:
     RestoreAccountRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        emailCode:
+        emailHash:
           type: string
         password:
           type: string
@@ -520,10 +543,7 @@ components:
     ForgetPasswordRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        emailCode:
+        emailHash:
           type: string
         password:
           type: string
@@ -540,7 +560,26 @@ components:
           type: string
         lastName:
           type: string
-
+    EmailValidationApproveRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        emailCode:
+          type: string
+        type:
+          type: string
+          enum:
+            - register
+            - resetPassword
+            - changeEmail
+            - restoreAccount
+    EmailValidationApproveResponse:
+      type: object
+      properties:
+          emailHash:
+            type: string
     UserResponse:
       type: object
       properties:

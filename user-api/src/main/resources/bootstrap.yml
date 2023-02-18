@@ -3,4 +3,8 @@ spring:
     name: user-api
   cloud:
     config:
-      uri:  ${CONFIG_SERVER}
+      uri: ${CONFIG_SERVER}
+eureka:
+  instance:
+    ip-address:  10.241.132.203
+    prefer-ip-address: true
