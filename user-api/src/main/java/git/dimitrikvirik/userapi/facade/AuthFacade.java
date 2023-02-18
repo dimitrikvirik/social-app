@@ -1,12 +1,16 @@
 package git.dimitrikvirik.userapi.facade;
 
+import git.dimitrikvirik.userapi.mapper.TokenMapper;
 import git.dimitrikvirik.userapi.mapper.UserMapper;
+import git.dimitrikvirik.userapi.model.*;
 import git.dimitrikvirik.userapi.model.EmailValidationApproveRequest;
 import git.dimitrikvirik.userapi.model.EmailValidationApproveResponse;
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
+import git.dimitrikvirik.userapi.model.JWTToken;
 import git.dimitrikvirik.userapi.model.LoginRequest;
 import git.dimitrikvirik.userapi.model.LoginResponse;
+import git.dimitrikvirik.userapi.model.RefreshLoginRequest;
 import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
 import git.dimitrikvirik.userapi.model.domain.UserPref;
@@ -67,10 +71,7 @@ public class AuthFacade {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is disabled");
 
 		return new LoginResponse()
-				.token(serviceToken.getToken())
-				.refreshToken(serviceToken.getRefreshToken())
-				.tokenValidTime((int) serviceToken.getExpiresIn())
-				.refreshTokenValidTime((int) serviceToken.getRefreshExpiresIn())
+				.jwt(TokenMapper.fromKeycloak(serviceToken))
 				.user(UserMapper.toUserResponse(user));
 	}
 
@@ -113,5 +114,10 @@ public class AuthFacade {
 				.builder()
 				.emailHash(emailHash.getId())
 				.build();
+	}
+
+	public JWTToken refreshLogin(RefreshLoginRequest refreshLoginRequest) {
+		AccessTokenResponse serviceToken = keycloakService.refreshToken(refreshLoginRequest.getRefreshToken());
+		return TokenMapper.fromKeycloak(serviceToken);
 	}
 }

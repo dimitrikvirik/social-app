@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -46,6 +47,15 @@ public class ErrorControllerAdvice {
 		String methodName = handlerMethod.getMethod().getName();
 		return new ResponseEntity<>(ErrorMapper.of(exception, applicationName,
 				methodName, exceptionName, request.getRequestURI()), exception.getStatusCode());
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> responseStatusExceptionHandler(AccessDeniedException exception,
+																		HandlerMethod handlerMethod, HttpServletRequest request) {
+		String exceptionName = exception.getClass().getName();
+		String methodName = handlerMethod.getMethod().getName();
+		return new ResponseEntity<>(ErrorMapper.of(exception, applicationName,
+				methodName, exceptionName, request.getRequestURI()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)

@@ -92,33 +92,41 @@ public class KeycloakService {
 			formData.add("client_secret", keycloakConfig.getClientSecret());
 			if (rememberMe)
 				formData.add("scope", "offline_access");
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
-
-
-			ResponseEntity<AccessTokenResponse> response = restTemplate.exchange(
-					String.format("%s/realms/%s/protocol/openid-connect/token", keycloakConfig.getKeycloakServerUrl(), keycloakConfig.getRealm()),
-					HttpMethod.POST,
-					entity,
-					AccessTokenResponse.class
-			);
-			return response.getBody();
+			return getAccessTokenResponse(formData);
 		} catch (HttpClientErrorException e) {
 			throw new ResponseStatusException(e.getStatusCode(), "Invalid username or password");
 		}
 	}
 
-	public String getCurrentKeycloakId() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+	public AccessTokenResponse refreshToken(String refreshToken) {
+		try {
+			MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+			formData.add("grant_type", "refresh_token");
+			formData.add("refresh_token", refreshToken);
+			formData.add("client_id", keycloakConfig.getClientId());
+			formData.add("client_secret", keycloakConfig.getClientSecret());
+
+			return getAccessTokenResponse(formData);
+		} catch (HttpClientErrorException e) {
+			throw new ResponseStatusException(e.getStatusCode(), "Invalid username or password");
+		}
 	}
 
-	//TODO test
-	public boolean isAdmin() {
-		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().map(Object::toString).toList().contains("ROLE_ADMIN");
-	}
+	private AccessTokenResponse getAccessTokenResponse(MultiValueMap<String, String> formData) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
+
+
+		ResponseEntity<AccessTokenResponse> response = restTemplate.exchange(
+				String.format("%s/realms/%s/protocol/openid-connect/token", keycloakConfig.getKeycloakServerUrl(), keycloakConfig.getRealm()),
+				HttpMethod.POST,
+				entity,
+				AccessTokenResponse.class
+		);
+		return response.getBody();
+	}
 }
 
 

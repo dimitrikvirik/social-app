@@ -7,8 +7,10 @@ import git.dimitrikvirik.userapi.model.EmailValidationApproveRequest;
 import git.dimitrikvirik.userapi.model.EmailValidationApproveResponse;
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.ForgetPasswordRequest;
+import git.dimitrikvirik.userapi.model.JWTToken;
 import git.dimitrikvirik.userapi.model.LoginRequest;
 import git.dimitrikvirik.userapi.model.LoginResponse;
+import git.dimitrikvirik.userapi.model.RefreshLoginRequest;
 import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,11 @@ public class AuthController implements AuthApi {
 	public ResponseEntity<Void> emailValidation(EmailValidationRequest emailValidationRequest) {
 		authFacade.emailValidation(emailValidationRequest);
 		return ResponseEntity.ok().build();
+	}
+
+	@Override
+	public ResponseEntity<JWTToken> refreshLogin(RefreshLoginRequest refreshLoginRequest) {
+		return new ResponseEntity<>(authFacade.refreshLogin(refreshLoginRequest), HttpStatus.OK);
 	}
 
 	@Override

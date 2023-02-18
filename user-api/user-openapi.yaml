@@ -49,6 +49,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /auth/refresh-login:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Login
+      description: Refresh Login
+      operationId: refreshLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshLoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWTToken'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /auth/register:
     post:
       tags:
@@ -520,7 +563,7 @@ components:
         rememberMe:
           type: boolean
           default: false
-    LoginResponse:
+    JWTToken:
       type: object
       properties:
         token:
@@ -531,6 +574,11 @@ components:
           type: integer
         refreshTokenValidTime:
           type: integer
+    LoginResponse:
+      type: object
+      properties:
+        jwt:
+          $ref: '#/components/schemas/JWTToken'
         user:
           $ref: '#/components/schemas/UserResponse'
     RegisterRequest:
@@ -589,15 +637,14 @@ components:
     UserUpdateRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        emailCode:
-          type: string
         firstName:
           type: string
         lastName:
           type: string
+        commentNotification:
+          type: boolean
+        likeNotification:
+          type: boolean
     EmailValidationApproveRequest:
       type: object
       properties:
@@ -630,9 +677,18 @@ components:
           type: string
         lastName:
           type: string
+        commentNotification:
+          type: boolean
+        likeNotification:
+          type: boolean
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
+    RefreshLoginRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string

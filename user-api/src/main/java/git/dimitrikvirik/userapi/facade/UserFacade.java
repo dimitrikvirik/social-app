@@ -2,6 +2,7 @@ package git.dimitrikvirik.userapi.facade;
 
 import git.dimitrikvirik.userapi.mapper.UserMapper;
 import git.dimitrikvirik.userapi.model.UserResponse;
+import git.dimitrikvirik.userapi.model.UserUpdateRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
 import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.UserService;
@@ -33,10 +34,7 @@ public class UserFacade {
 		);
 
 
-		UserResponse userResponse = UserMapper.toUserResponse(user);
-		userResponse.setCreatedAt(user.getCreatedAt().atOffset(ZoneOffset.UTC));
-		userResponse.setUpdatedAt(user.getCreatedAt().atOffset(ZoneOffset.UTC));
-		return userResponse;
+		return UserMapper.toFullUserResponse(user);
 
 	}
 
@@ -60,14 +58,17 @@ public class UserFacade {
 
 	public void deleteUser(String id) {
 		User user = userService.findById(id);
-		String currentKeycloakId = keycloakService.getCurrentKeycloakId();
-
-
-		if (!user.getKeycloakId().equals(currentKeycloakId) && !keycloakService.isAdmin()) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this user");
-		}
 
 		user.setIsDisabled(true);
 		userService.save(user);
+	}
+
+	public UserResponse updateUser(String id, UserUpdateRequest userUpdateRequest) {
+		User user = userService.findById(id);
+		user.setFirstname(userUpdateRequest.getFirstName());
+		user.setLastname(userUpdateRequest.getLastName());
+		user.getUserPref().setCommentNotificationEnabled(userUpdateRequest.getCommentNotification());
+		user.getUserPref().setLikeNotificationEnabled(userUpdateRequest.getLikeNotification());
+		return UserMapper.toFullUserResponse(userService.save(user));
 	}
 }

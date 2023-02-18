@@ -31,6 +31,7 @@ public class UserController implements UserApi {
 	}
 
 	@Override
+	@PreAuthorize("@validPermission.sameOrAdmin(#id)")
 	public ResponseEntity<Void> deleteUser(String id) {
 		userFacade.deleteUser(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -49,7 +50,8 @@ public class UserController implements UserApi {
 	}
 
 	@Override
+	@PreAuthorize("@validPermission.sameOrAdmin(#id)")
 	public ResponseEntity<UserResponse> updateUser(String id, UserUpdateRequest userUpdateRequest) {
-		return UserApi.super.updateUser(id, userUpdateRequest);
+		return  ResponseEntity.ok(userFacade.updateUser(id, userUpdateRequest));
 	}
 }

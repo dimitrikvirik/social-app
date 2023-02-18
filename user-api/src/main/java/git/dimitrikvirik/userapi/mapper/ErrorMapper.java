@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -88,6 +89,12 @@ public class ErrorMapper {
 		return new ErrorResponse(message, application_name, method_name, exception_name, path, status);
 	}
 
+	public static ErrorResponse of(AccessDeniedException e, String application_name, String method_name, String exception_name, String path) {
+		var status = HttpStatus.FORBIDDEN.name();
+		String msg = e.getMessage();
+
+		return new ErrorResponse(msg, application_name, method_name, exception_name, path, status);
+	}
 
 	public static ErrorResponse of(Exception e, String application_name, String method_name, String exception_name, String path) {
 		var status = HttpStatus.INTERNAL_SERVER_ERROR.name();
@@ -95,4 +102,6 @@ public class ErrorMapper {
 
 		return new ErrorResponse(msg, application_name, method_name, exception_name, path, status);
 	}
+
+
 }
