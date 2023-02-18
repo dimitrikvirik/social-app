@@ -2,6 +2,7 @@ package git.dimitrikvirik.userapi.controller;
 
 import git.dimitrikvirik.userapi.api.UserApi;
 import git.dimitrikvirik.userapi.facade.UserFacade;
+import git.dimitrikvirik.userapi.model.ChangeEmailRequest;
 import git.dimitrikvirik.userapi.model.UserResponse;
 import git.dimitrikvirik.userapi.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,13 @@ public class UserController implements UserApi {
 	public ResponseEntity<Void> deleteUser(String id) {
 		userFacade.deleteUser(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@Override
+	@PreAuthorize("@validPermission.sameOrAdmin(#id)")
+	public ResponseEntity<Void> changeEmail(String id, ChangeEmailRequest changeEmailRequest) {
+		userFacade.changeEmail(id, changeEmailRequest);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@Override

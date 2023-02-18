@@ -263,6 +263,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   #TODO oauth2 google
+  /user/{id}/change-email:
+    post:
+      tags:
+        - User
+      summary: Change Email
+      description: Change Email
+      operationId: changeEmail
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeEmailRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /user:
     get:
       tags:
@@ -691,4 +731,9 @@ components:
       type: object
       properties:
         refreshToken:
+          type: string
+    ChangeEmailRequest:
+      type: object
+      properties:
+        emailHash:
           type: string
