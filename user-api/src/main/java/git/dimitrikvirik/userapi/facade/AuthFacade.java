@@ -1,6 +1,6 @@
 package git.dimitrikvirik.userapi.facade;
 
-import git.dimitrikvirik.userapi.model.*;
+import git.dimitrikvirik.userapi.mapper.UserMapper;
 import git.dimitrikvirik.userapi.model.EmailValidationApproveRequest;
 import git.dimitrikvirik.userapi.model.EmailValidationApproveResponse;
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
@@ -9,6 +9,7 @@ import git.dimitrikvirik.userapi.model.LoginRequest;
 import git.dimitrikvirik.userapi.model.LoginResponse;
 import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
+import git.dimitrikvirik.userapi.model.domain.UserPref;
 import git.dimitrikvirik.userapi.model.enums.EmailType;
 import git.dimitrikvirik.userapi.model.redis.EmailHash;
 import git.dimitrikvirik.userapi.service.EmailCodeService;
@@ -16,6 +17,7 @@ import git.dimitrikvirik.userapi.service.EmailHashService;
 import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,12 +47,31 @@ public class AuthFacade {
 	}
 
 	public void forgetPassword(ForgetPasswordRequest forgetPasswordRequest) {
-
-
+		EmailHash emailHash = emailHashService.getById(forgetPasswordRequest.getEmailHash());
+		if (!emailHash.getType().equals(EmailType.RESETPASSWORD))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email hash is not for register");
+		User user = userService.findByEmail(emailHash.getEmail()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.GONE, "User not found")
+		);
+		keycloakService.resetPassword(user.getKeycloakId(), forgetPasswordRequest.getPassword());
 	}
 
 	public LoginResponse login(LoginRequest loginRequest) {
-		return null;
+		AccessTokenResponse serviceToken = keycloakService.getToken(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getRememberMe());
+		User user = userService.findByEmail(loginRequest.getEmail()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.GONE, "User not found")
+		);
+		if (user.getIsBlocked())
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is blocked");
+		if (user.getIsDisabled())
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is disabled");
+
+		return new LoginResponse()
+				.token(serviceToken.getToken())
+				.refreshToken(serviceToken.getRefreshToken())
+				.tokenValidTime((int) serviceToken.getExpiresIn())
+				.refreshTokenValidTime((int) serviceToken.getRefreshExpiresIn())
+				.user(UserMapper.toUserResponse(user));
 	}
 
 	public void register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {
@@ -64,6 +85,7 @@ public class AuthFacade {
 		user.setLastname(registerRequest.getLastName());
 		user.setIsDisabled(false);
 		user.setIsBlocked(false);
+		user.setUserPref(new UserPref());
 		userService.save(user);
 		String keycloakId = keycloakService.createUser(user, registerRequest.getPassword());
 		user.setKeycloakId(keycloakId);
@@ -71,7 +93,14 @@ public class AuthFacade {
 	}
 
 	public void restoreAccount(RestoreAccountRequest restoreAccountRequest) {
-
+		EmailHash emailHash = emailHashService.getById(restoreAccountRequest.getEmailHash());
+		if (!emailHash.getType().equals(EmailType.RESTOREACCOUNT))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email hash is not for register");
+		User user = userService.findByEmail(emailHash.getEmail()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.GONE, "User not found")
+		);
+		user.setIsDisabled(false);
+		userService.save(user);
 	}
 
 	public EmailValidationApproveResponse emailValidationApprove(EmailValidationApproveRequest emailValidationApproveRequest) {

@@ -1,6 +1,6 @@
 package git.dimitrikvirik.userapi.service;
 
-import git.dimitrikvirik.userapi.mapper.EnumMapper;
+
 import git.dimitrikvirik.userapi.model.EmailValidationRequest;
 import git.dimitrikvirik.userapi.model.enums.EmailType;
 import git.dimitrikvirik.userapi.model.redis.EmailCode;

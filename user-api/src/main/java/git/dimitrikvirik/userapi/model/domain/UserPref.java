@@ -15,8 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 public class UserPref {
 
-	@Id @GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 
 	@Column(name = "comment_notification_enabled")

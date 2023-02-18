@@ -5,7 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +19,8 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 public class User {
 
-	@Id @GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 
 	@OneToOne(cascade = CascadeType.ALL)
@@ -43,6 +47,12 @@ public class User {
 
 	@Column(name = "is_blocked")
 	private Boolean isBlocked = false;
+
+	@CreationTimestamp
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	private LocalDateTime updatedAt = LocalDateTime.now();
 
 
 }

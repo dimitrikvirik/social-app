@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,10 @@ public class UserService {
 
 	public User save(User user) {
 		return userRepository.save(user);
+	}
+
+	public void deleteWaitingUsers() {
+		userRepository.deleteByIsDisabledAndUpdatedAtAfter(true, LocalDateTime.now().minusMonths(1));
 	}
 
 	public void delete(String id) {
@@ -33,6 +38,10 @@ public class UserService {
 
 	public Optional<User> findByEmail(String email) {
 		return userRepository.findByEmail(email);
+	}
+
+	public Optional<User> findByKeycloakKId(String keycloakId) {
+		return userRepository.findByKeycloakId(keycloakId);
 	}
 
 	public boolean existsByEmail(String email) {

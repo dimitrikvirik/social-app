@@ -38,6 +38,7 @@ public class AuthController implements AuthApi {
 		return ResponseEntity.ok().build();
 	}
 
+
 	@Override
 	public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
 		return new ResponseEntity<>(authFacade.login(loginRequest), HttpStatus.OK);
