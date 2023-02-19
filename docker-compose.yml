@@ -81,7 +81,7 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minioPass
     command:
-      - --console-address ":9001" /data
+      - server --console-address ":9001" /data
     networks:
       - social-net
   user:
