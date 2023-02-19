@@ -41,21 +41,18 @@ openApiGenerate {
     library = "spring-boot"
     inputSpec = "$projectDir/user-openapi.yaml"
     outputDir = "$buildDir/generated-sources/openapi"
-
+    templateDir = "$projectDir/templates"
     configOptions = [
-            apiPackage                    : "git.dimitrikvirik.userapi.api",
-            modelPackage                  : "git.dimitrikvirik.userapi.model",
-            useSpringBoot3                : "true",
-            interfaceOnly                 : "true",
-            dateLibrary                   : "java8",
-            useTags                       : "true",
-            openApiNullable               : "false",
-            additionalModelTypeAnnotations: "@lombok.Data @lombok.NoArgsConstructor @lombok.AllArgsConstructor @lombok.Builder ",
+            apiPackage     : "git.dimitrikvirik.userapi.api",
+            modelPackage   : "git.dimitrikvirik.userapi.model",
+            useSpringBoot3 : "true",
+            interfaceOnly  : "true",
+            dateLibrary    : "java8",
+            useTags        : "true",
+            openApiNullable: "false"
     ]
 }
-tasks.named('build') {
-    dependsOn 'openApiGenerate'
-}
+
 
 tasks.named('test') {
     useJUnitPlatform()
@@ -64,7 +61,7 @@ tasks.named('test') {
 sourceSets {
     main {
         java {
-            srcDir "$buildDir/generated-sources/openapi"
+            srcDir "$buildDir/generated-sources/openapi/src/main/java"
         }
     }
 }

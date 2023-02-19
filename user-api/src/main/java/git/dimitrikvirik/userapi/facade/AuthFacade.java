@@ -80,9 +80,11 @@ public class AuthFacade {
 		if (user.getIsDisabled())
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is disabled");
 
-		return new LoginResponse()
+		return  LoginResponse
+				.builder()
 				.jwt(TokenMapper.fromKeycloak(serviceToken))
-				.user(UserMapper.toFullUserResponse(user));
+				.user(UserMapper.toFullUserResponse(user))
+				.build();
 	}
 
 	public void register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {

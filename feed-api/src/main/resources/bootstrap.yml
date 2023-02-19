@@ -11,7 +11,6 @@ spring:
   kafka:
     bootstrap-servers: 10.241.76.20:9092
     consumer:
-      auto-offset-reset: earliest
       group-id: feed-api
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

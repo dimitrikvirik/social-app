@@ -23,7 +23,7 @@ public class UserFacade {
 
 	@PostConstruct
 	public void kafkaSubscribe() {
-		kafkaTemplate.receive().map(record ->
+		kafkaTemplate.receiveAutoAck().map(record ->
 				{
 					UserDTO value = record.value();
 					return User.builder()
@@ -40,11 +40,12 @@ public class UserFacade {
 
 	public Mono<ResponseEntity<UserResponse>> getUserById(String id, ServerWebExchange exchange) {
 		return userService.userById(id)
-				.map(user -> ResponseEntity.ok(new UserResponse()
+				.map(user -> ResponseEntity.ok(UserResponse.builder()
 						.id(user.getId())
 						.firstname(user.getFirstname())
 						.lastname(user.getLastname())
 						.photo(user.getPhoto())
+						.build()
 				)).log().defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 }

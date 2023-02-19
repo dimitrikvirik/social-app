@@ -100,15 +100,36 @@ paths:
       summary: Get all posts
       description: Get all posts
       operationId: getAllPosts
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          required: true
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: size of page
+          required: true
+          schema:
+            type: integer
+            default: 10
+        - name: searchText
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            text/event-stream:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/PostResponse'
+
         '400':
           description: Bad Request
           content:
@@ -284,6 +305,10 @@ components:
           type: string
         content:
           type: string
+        topics:
+          type: array
+          items:
+            type: string
     PostResponse:
       type: object
       properties:
@@ -295,6 +320,10 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/UserResponse'
+        topics:
+          type: array
+          items:
+            type: string
     UserResponse:
       type: object
       properties:

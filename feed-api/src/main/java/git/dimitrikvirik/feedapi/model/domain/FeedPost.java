@@ -4,10 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.UUID;
+import java.util.List;
 
 @Document(indexName = "feed_post")
 @AllArgsConstructor
@@ -17,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class FeedPost {
 	@Id
-	private String id = UUID.randomUUID().toString();
+	private String id;
 
 	private User user;
 
@@ -26,5 +24,7 @@ public class FeedPost {
 
 	@CompletionField
 	private String content;
+
+	public List<String> topics;
 
 }
