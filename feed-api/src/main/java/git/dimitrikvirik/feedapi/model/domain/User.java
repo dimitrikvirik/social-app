@@ -3,7 +3,6 @@ package git.dimitrikvirik.feedapi.model.domain;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 @Document(indexName = "user")
