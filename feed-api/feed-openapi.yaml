@@ -5,31 +5,35 @@ info:
   version: 1.0.0
 
 paths:
-  /test:
+  /user/{id}:
     get:
       tags:
-        - Test
-      summary: Test
-      description: Test
-      operationId: test
+        - User
+      summary: Get user by id
+      description: Get user by id
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: id of user
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-        '401':
-          description: Unauthorized
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -52,6 +56,17 @@ paths:
 
 components:
   schemas:
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        photo:
+          type: string
     ErrorResponse:
       type: object
       properties:

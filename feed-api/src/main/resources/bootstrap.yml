@@ -4,14 +4,13 @@ spring:
   cloud:
     config:
       uri: ${CONFIG_SERVER}
+  elasticsearch:
+    uris: http://10.241.76.20:9200 # local Profile
 
 
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
+
+
 eureka:
   instance:
-    ip-address: 10.241.132.203
+    ip-address: 10.241.132.203 # local Profile
     prefer-ip-address: true
