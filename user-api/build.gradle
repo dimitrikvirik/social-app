@@ -22,6 +22,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
     implementation 'org.keycloak:keycloak-spring-boot-starter:20.0.3'
     implementation 'org.keycloak:keycloak-admin-client:20.0.3'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
 
     implementation 'io.minio:minio:8.5.2'
 
@@ -42,9 +43,9 @@ openApiGenerate {
     outputDir = "$buildDir/generated-sources/openapi"
 
     configOptions = [
-            apiPackage: "git.dimitrikvirik.userapi.api",
-            modelPackage: "git.dimitrikvirik.userapi.model",
-            useSpringBoot3: "true",
+            apiPackage                    : "git.dimitrikvirik.userapi.api",
+            modelPackage                  : "git.dimitrikvirik.userapi.model",
+            useSpringBoot3                : "true",
             interfaceOnly                 : "true",
             dateLibrary                   : "java8",
             useTags                       : "true",

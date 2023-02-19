@@ -1,5 +1,7 @@
 package git.dimitrikvirik.userapi.facade;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import git.dimitrikvirik.userapi.mapper.TokenMapper;
 import git.dimitrikvirik.userapi.mapper.UserMapper;
 import git.dimitrikvirik.userapi.model.*;
@@ -23,6 +25,7 @@ import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,6 +38,10 @@ public class AuthFacade {
 
 	private final EmailHashService emailHashService;
 	private final KeycloakService keycloakService;
+
+	private final KafkaTemplate<String, String> kafkaTemplate;
+
+	private final ObjectMapper objectMapper;
 
 	public void emailValidation(EmailValidationRequest emailValidationRequest) {
 		if (emailCodeService.getByEmail(emailValidationRequest.getEmail()).isPresent()) {
@@ -90,6 +97,11 @@ public class AuthFacade {
 		userService.save(user);
 		String keycloakId = keycloakService.createUser(user, registerRequest.getPassword());
 		user.setKeycloakId(keycloakId);
+		try {
+			kafkaTemplate.send("user", objectMapper.writeValueAsString(user));
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 		userService.save(user);
 	}
 

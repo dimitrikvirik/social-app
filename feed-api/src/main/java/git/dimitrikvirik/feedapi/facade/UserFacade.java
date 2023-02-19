@@ -1,13 +1,12 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.service.UserService;
+import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 
 @Service
 @RequiredArgsConstructor

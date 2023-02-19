@@ -1,5 +1,6 @@
 package git.dimitrikvirik.userapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -13,14 +14,19 @@ import org.springframework.web.client.RestTemplate;
 @EnableScheduling
 public class UserApiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(UserApiApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(UserApiApplication.class, args);
+	}
 
 
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
 	}
 
 }

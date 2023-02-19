@@ -12,7 +12,9 @@ import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.MinioService;
 import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +32,9 @@ public class UserFacade {
 	private final MinioService minioService;
 
 	private final KeycloakService keycloakService;
+
+
+	private final KafkaTemplate<String, String> kafkaTemplate;
 
 
 	public UserResponse getCurrentUser() {
