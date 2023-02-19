@@ -11,8 +11,15 @@ spring:
   kafka:
     bootstrap-servers: 10.241.76.20:9092
     consumer:
+      auto-offset-reset: earliest
       group-id: feed-api
-
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: git.dimitrikvirik.feedapi.model.kafka.UserDTO
+    properties:
+      spring.json.trusted.packages: "*"
 eureka:
   instance:
     ip-address: 10.241.132.203 # local Profile

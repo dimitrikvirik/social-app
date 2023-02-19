@@ -45,11 +45,6 @@ public class AuthFacade {
 
 	private final ObjectMapper objectMapper;
 
-	@PostConstruct
-	public void test() {
-		kafkaTemplate.send("user", "test");
-
-	}
 
 	public void emailValidation(EmailValidationRequest emailValidationRequest) {
 		if (emailCodeService.getByEmail(emailValidationRequest.getEmail()).isPresent()) {
@@ -106,9 +101,7 @@ public class AuthFacade {
 		String keycloakId = keycloakService.createUser(user, registerRequest.getPassword());
 		user.setKeycloakId(keycloakId);
 		try {
-
 			UserDTO userDTO = UserMapper.toUserDTO(user);
-
 			kafkaTemplate.send("user", objectMapper.writeValueAsString(userDTO));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);

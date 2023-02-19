@@ -1,11 +1,14 @@
 package git.dimitrikvirik.userapi.facade;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import git.dimitrikvirik.userapi.mapper.UserMapper;
 import git.dimitrikvirik.userapi.model.ChangeEmailRequest;
 import git.dimitrikvirik.userapi.model.UserResponse;
 import git.dimitrikvirik.userapi.model.UserUpdateRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
 import git.dimitrikvirik.userapi.model.enums.EmailType;
+import git.dimitrikvirik.userapi.model.kafka.UserDTO;
 import git.dimitrikvirik.userapi.model.redis.EmailHash;
 import git.dimitrikvirik.userapi.service.EmailHashService;
 import git.dimitrikvirik.userapi.service.KeycloakService;
@@ -33,23 +36,20 @@ public class UserFacade {
 
 	private final KeycloakService keycloakService;
 
-
 	private final KafkaTemplate<String, String> kafkaTemplate;
+
+	private final ObjectMapper objectMapper;
 
 
 	public UserResponse getCurrentUser() {
 		String keycloakId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-
 		User user = userService.findByKeycloakKId(keycloakId).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
 		);
-
-
 		return UserMapper.toFullUserResponse(user);
 
 	}
-
 
 	public UserResponse getUser(String id) {
 		User user = userService.findById(id);
@@ -71,7 +71,6 @@ public class UserFacade {
 	}
 
 
-
 	public void deleteUser(String id) {
 		User user = userService.findById(id);
 		user.setIsDisabled(true);
@@ -85,6 +84,13 @@ public class UserFacade {
 		user.setLastname(userUpdateRequest.getLastName());
 		user.getUserPref().setCommentNotificationEnabled(userUpdateRequest.getCommentNotification());
 		user.getUserPref().setLikeNotificationEnabled(userUpdateRequest.getLikeNotification());
+		try {
+			UserDTO userDTO = UserMapper.toUserDTO(user);
+			kafkaTemplate.send("user", objectMapper.writeValueAsString(userDTO));
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
 		return UserMapper.toFullUserResponse(userService.save(user));
 	}
 

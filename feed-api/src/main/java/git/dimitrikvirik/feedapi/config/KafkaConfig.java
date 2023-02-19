@@ -1,5 +1,6 @@
 package git.dimitrikvirik.feedapi.config;
 
+import git.dimitrikvirik.feedapi.model.kafka.UserDTO;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +13,14 @@ import java.util.Collections;
 public class KafkaConfig {
 
 	@Bean
-	public ReceiverOptions<String, String> kafkaReceiverOptions(KafkaProperties kafkaProperties) {
-		ReceiverOptions<String, String> basicReceiverOptions = ReceiverOptions.create(kafkaProperties.buildConsumerProperties());
+	public ReceiverOptions<String, UserDTO> kafkaReceiverOptions(KafkaProperties kafkaProperties) {
+		ReceiverOptions<String, UserDTO> basicReceiverOptions = ReceiverOptions.create(kafkaProperties.buildConsumerProperties());
 		return basicReceiverOptions.subscription(Collections.singletonList("user"));
 	}
 
 	@Bean
-	public ReactiveKafkaConsumerTemplate<String, String> reactiveKafkaConsumerTemplate(ReceiverOptions<String, String> kafkaReceiverOptions) {
-		return new ReactiveKafkaConsumerTemplate<String, String>(kafkaReceiverOptions);
+	public ReactiveKafkaConsumerTemplate<String, UserDTO> reactiveKafkaConsumerTemplate(ReceiverOptions<String, UserDTO> kafkaReceiverOptions) {
+		return new ReactiveKafkaConsumerTemplate<>(kafkaReceiverOptions);
 	}
 
 

@@ -1,22 +1,16 @@
 package git.dimitrikvirik.feedapi.facade;
 
+import git.dimitrikvirik.feedapi.model.kafka.UserDTO;
+import git.dimitrikvirik.feedapi.model.domain.User;
 import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.kafka.receiver.ReceiverOptions;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +18,23 @@ public class UserFacade {
 
 
 	private final UserService userService;
-	private final ReactiveKafkaConsumerTemplate<String, String> kafkaTemplate;
+	private final ReactiveKafkaConsumerTemplate<String, UserDTO> kafkaTemplate;
 
 
 	@PostConstruct
-	public void test() {
-		kafkaTemplate.receiveAutoAck().subscribe(record -> {
-			System.out.println(record.value());
-		});
+	public void kafkaSubscribe() {
+		kafkaTemplate.receive().map(record ->
+				{
+					UserDTO value = record.value();
+					return User.builder()
+							.firstname(value.getFirstName())
+							.lastname(value.getLastName())
+							.photo(value.getProfile())
+							.id(value.getId())
+							.build();
+
+				}
+		).map(userService::save).log().subscribe();
 	}
 
 
