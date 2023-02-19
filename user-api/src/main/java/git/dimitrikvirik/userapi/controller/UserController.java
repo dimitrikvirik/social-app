@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -60,6 +61,13 @@ public class UserController implements UserApi {
 	@Override
 	@PreAuthorize("@validPermission.sameOrAdmin(#id)")
 	public ResponseEntity<UserResponse> updateUser(String id, UserUpdateRequest userUpdateRequest) {
-		return  ResponseEntity.ok(userFacade.updateUser(id, userUpdateRequest));
+		return ResponseEntity.ok(userFacade.updateUser(id, userUpdateRequest));
+	}
+
+
+	@Override
+	@PreAuthorize("@validPermission.sameOrAdmin(#id)")
+	public ResponseEntity<UserResponse> uploadUserPhoto(String id, MultipartFile file) {
+		return ResponseEntity.ok(userFacade.uploadUserPhoto(id, file));
 	}
 }

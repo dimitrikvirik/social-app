@@ -18,6 +18,7 @@ public class EmailCodeService {
 
 	private final EmailCodeRepository emailCodeRepository;
 
+
 	public void create(String email, EmailValidationRequest.TypeEnum type) {
 		delete(email);
 		EmailCode emailCode = new EmailCode();

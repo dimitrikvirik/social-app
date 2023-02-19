@@ -11,6 +11,7 @@ public class UserMapper {
 		return UserResponse
 				.builder()
 				.id(user.getId())
+				.photo(user.getProfile())
 				.firstName(user.getFirstname())
 				.lastName(user.getLastname())
 				.build();
@@ -20,6 +21,7 @@ public class UserMapper {
 		return UserResponse
 				.builder()
 				.id(user.getId())
+				.photo(user.getProfile())
 				.firstName(user.getFirstname())
 				.lastName(user.getLastname())
 				.email(user.getEmail())

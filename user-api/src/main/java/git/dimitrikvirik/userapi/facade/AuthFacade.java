@@ -72,7 +72,7 @@ public class AuthFacade {
 
 		return new LoginResponse()
 				.jwt(TokenMapper.fromKeycloak(serviceToken))
-				.user(UserMapper.toUserResponse(user));
+				.user(UserMapper.toFullUserResponse(user));
 	}
 
 	public void register(git.dimitrikvirik.userapi.model.RegisterRequest registerRequest) {

@@ -127,6 +127,11 @@ public class KeycloakService {
 		);
 		return response.getBody();
 	}
+
+	public void logout(String keycloakId) {
+		UsersResource usersResource = getUsersResource();
+		usersResource.get(keycloakId).logout();
+	}
 }
 
 

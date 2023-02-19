@@ -8,11 +8,14 @@ import git.dimitrikvirik.userapi.model.domain.User;
 import git.dimitrikvirik.userapi.model.enums.EmailType;
 import git.dimitrikvirik.userapi.model.redis.EmailHash;
 import git.dimitrikvirik.userapi.service.EmailHashService;
+import git.dimitrikvirik.userapi.service.KeycloakService;
+import git.dimitrikvirik.userapi.service.MinioService;
 import git.dimitrikvirik.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -24,6 +27,9 @@ public class UserFacade {
 
 	private final EmailHashService emailHashService;
 
+	private final MinioService minioService;
+
+	private final KeycloakService keycloakService;
 
 
 	public UserResponse getCurrentUser() {
@@ -44,10 +50,12 @@ public class UserFacade {
 		User user = userService.findById(id);
 		return UserMapper.toUserResponse(user);
 	}
-	//TODO remove keycloak session
+
+
 	public void blockUser(String id) {
 		User user = userService.findById(id);
 		user.setIsBlocked(true);
+		keycloakService.logout(user.getKeycloakId());
 		userService.save(user);
 	}
 
@@ -58,11 +66,11 @@ public class UserFacade {
 	}
 
 
-	//TODO remove keycloak session
+
 	public void deleteUser(String id) {
 		User user = userService.findById(id);
-
 		user.setIsDisabled(true);
+		keycloakService.logout(user.getKeycloakId());
 		userService.save(user);
 	}
 
@@ -83,5 +91,12 @@ public class UserFacade {
 		User user = userService.findById(id);
 		user.setEmail(emailHash.getEmail());
 		userService.save(user);
+	}
+
+	public UserResponse uploadUserPhoto(String id, MultipartFile file) {
+		User user = userService.findById(id);
+		String url = minioService.upload(file);
+		user.setProfile(url);
+		return UserMapper.toFullUserResponse(userService.save(user));
 	}
 }
