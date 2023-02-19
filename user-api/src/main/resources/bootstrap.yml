@@ -2,13 +2,8 @@ spring:
   application:
     name: user-api
   cloud:
-    stream:
-      bindings:
-        userCreated:
-          destination: user-created
-      kafka:
-        streams:
-          binder:
-            brokers: ${KAFKA_BROKER}
     config:
       uri: ${CONFIG_SERVER}
+  kafka:
+    bootstrap-servers: 10.241.76.20:9092
+

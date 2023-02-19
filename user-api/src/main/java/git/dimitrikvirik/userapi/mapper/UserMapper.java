@@ -2,6 +2,7 @@ package git.dimitrikvirik.userapi.mapper;
 
 import git.dimitrikvirik.userapi.model.UserResponse;
 import git.dimitrikvirik.userapi.model.domain.User;
+import git.dimitrikvirik.userapi.model.kafka.UserDTO;
 
 import java.time.ZoneOffset;
 
@@ -32,4 +33,13 @@ public class UserMapper {
 				.build();
 	}
 
+	public static UserDTO toUserDTO(User user) {
+		return new UserDTO(
+				user.getId(),
+				user.getFirstname(),
+				user.getLastname(),
+				user.getEmail(),
+				user.getProfile()
+		);
+	}
 }

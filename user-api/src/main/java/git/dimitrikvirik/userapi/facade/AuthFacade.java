@@ -17,11 +17,13 @@ import git.dimitrikvirik.userapi.model.RestoreAccountRequest;
 import git.dimitrikvirik.userapi.model.domain.User;
 import git.dimitrikvirik.userapi.model.domain.UserPref;
 import git.dimitrikvirik.userapi.model.enums.EmailType;
+import git.dimitrikvirik.userapi.model.kafka.UserDTO;
 import git.dimitrikvirik.userapi.model.redis.EmailHash;
 import git.dimitrikvirik.userapi.service.EmailCodeService;
 import git.dimitrikvirik.userapi.service.EmailHashService;
 import git.dimitrikvirik.userapi.service.KeycloakService;
 import git.dimitrikvirik.userapi.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,12 @@ public class AuthFacade {
 	private final KafkaTemplate<String, String> kafkaTemplate;
 
 	private final ObjectMapper objectMapper;
+
+	@PostConstruct
+	public void test() {
+		kafkaTemplate.send("user", "test");
+
+	}
 
 	public void emailValidation(EmailValidationRequest emailValidationRequest) {
 		if (emailCodeService.getByEmail(emailValidationRequest.getEmail()).isPresent()) {
@@ -98,7 +106,10 @@ public class AuthFacade {
 		String keycloakId = keycloakService.createUser(user, registerRequest.getPassword());
 		user.setKeycloakId(keycloakId);
 		try {
-			kafkaTemplate.send("user", objectMapper.writeValueAsString(user));
+
+			UserDTO userDTO = UserMapper.toUserDTO(user);
+
+			kafkaTemplate.send("user", objectMapper.writeValueAsString(userDTO));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

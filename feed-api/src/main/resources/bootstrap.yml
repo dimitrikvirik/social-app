@@ -8,7 +8,10 @@ spring:
     uris: http://10.241.76.20:9200 # local Profile
 
 
-
+  kafka:
+    bootstrap-servers: 10.241.76.20:9092
+    consumer:
+      group-id: feed-api
 
 eureka:
   instance:
