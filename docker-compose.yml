@@ -11,7 +11,7 @@ services:
     networks:
       - social-net
     ports:
-       - 5432:5432
+      - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -83,6 +83,26 @@ services:
     command: server --console-address ":9001" /data
     networks:
       - social-net
+  elasticsearch:
+    image: elasticsearch:8.5.3
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - 9200:9200
+    networks:
+      - social-net
+  kibana:
+    container_name: kb-container
+    image: kibana:8.5.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
   user:
     image: user-api:1.0.0
     networks:
@@ -95,4 +115,4 @@ services:
     depends_on:
       - gateway
 volumes:
-  minio_storage: {}
+  minio_storage: { }

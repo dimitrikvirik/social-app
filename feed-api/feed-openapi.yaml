@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: User API
+  description: User Api
+  version: 1.0.0
+
+paths:
+  /test:
+    get:
+      tags:
+        - Test
+      summary: Test
+      description: Test
+      operationId: test
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        application:
+          type: string
+        methodName:
+          type: string
+        exceptionName:
+          type: string
+        path:
+          type: string
+        status:
+          type: string

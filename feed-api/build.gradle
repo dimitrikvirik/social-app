@@ -1,0 +1,54 @@
+plugins {
+    id "org.openapi.generator" version "6.3.0"
+
+}
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-api:2.0.2'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.data:spring-data-elasticsearch'
+
+
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    library = "spring-boot"
+    inputSpec = "$projectDir/feed-openapi.yaml"
+    outputDir = "$buildDir/generated-sources/openapi"
+
+    configOptions = [
+            apiPackage: "git.dimitrikvirik.generated.feedapi.api",
+            modelPackage: "git.dimitrikvirik.generated.feedapi.model",
+            reactive: "true",
+            delegatePattern: "true",
+            useSpringBoot3: "true",
+            interfaceOnly                 : "true",
+            dateLibrary                   : "java8",
+            useTags                       : "true",
+            openApiNullable               : "false",
+            additionalModelTypeAnnotations: "@lombok.Data @lombok.NoArgsConstructor @lombok.AllArgsConstructor @lombok.Builder ",
+    ]
+}
+tasks.named('build') {
+    dependsOn 'openApiGenerate'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated-sources/openapi"
+        }
+    }
+}

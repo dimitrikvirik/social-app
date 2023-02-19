@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: feed-api
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER}
+
+
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
+eureka:
+  instance:
+    ip-address: 10.241.132.203
+    prefer-ip-address: true
