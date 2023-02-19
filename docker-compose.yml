@@ -80,8 +80,7 @@ services:
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minioPass
-    command:
-      - server --console-address ":9001" /data
+    command: server --console-address ":9001" /data
     networks:
       - social-net
   user:
