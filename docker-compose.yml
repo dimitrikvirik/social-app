@@ -20,8 +20,6 @@ services:
     image: jboss/keycloak:latest
     networks:
       - social-net
-    volumes:
-      - ./keycloak:/opt/jboss/keycloak/standalone/data
     ports:
       - 7001:8080
     environment:
@@ -136,5 +134,4 @@ services:
     depends_on:
       - gateway
 volumes:
-  keycloak: {}
   minio_storage: { }
