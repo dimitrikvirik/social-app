@@ -4,6 +4,3 @@ spring:
   cloud:
     config:
       uri: ${CONFIG_SERVER}
-  kafka:
-    bootstrap-servers: 10.241.76.20:9092
-
