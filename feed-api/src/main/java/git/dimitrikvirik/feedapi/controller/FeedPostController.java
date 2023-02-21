@@ -1,9 +1,7 @@
 package git.dimitrikvirik.feedapi.controller;
 
 import git.dimitrikvirik.feedapi.facade.PostFacade;
-import git.dimitrikvirik.feedapi.model.domain.User;
 import git.dimitrikvirik.generated.feedapi.api.PostApi;
-import git.dimitrikvirik.generated.feedapi.model.PostPageResponse;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import git.dimitrikvirik.generated.feedapi.model.UserResponse;
@@ -17,7 +15,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 @RestController
@@ -50,22 +47,6 @@ public class FeedPostController implements PostApi {
 	@Override
 	public Mono<ResponseEntity<PostResponse>> updatePost(String id, Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 		return postFacade.updatePost(id, postRequest, exchange);
-	}
-	@GetMapping(value = "/test",  produces =  MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Mono<ResponseEntity<Flux<UserResponse>>> test() {
-
-		var flux = Flux.fromStream(
-				Stream.of(
-						UserResponse.builder().id("1").firstname("name1").build(),
-						UserResponse.builder().id("2").firstname("name2").build(),
-						UserResponse.builder().id("3").firstname("name3").build()
-				)
-		).delayElements(Duration.ofSeconds(2));
-
-
-		return Mono.just(ResponseEntity.ok(flux));
-
-
 	}
 
 }

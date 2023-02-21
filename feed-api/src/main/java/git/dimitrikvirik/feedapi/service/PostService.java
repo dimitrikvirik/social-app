@@ -3,6 +3,7 @@ package git.dimitrikvirik.feedapi.service;
 import co.elastic.clients.elasticsearch._types.ScoreSort;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.util.ObjectBuilder;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.repository.PostRepository;
@@ -18,6 +19,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.data.elasticsearch.core.query.Query.SearchType.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.data.elasticsearch.core.query.Query.SearchType.DFS_QUERY_THEN_FETCH;
@@ -45,11 +50,12 @@ public class PostService {
 
 	public Flux<FeedPost> getAll(Integer page, Integer size, String searchText) {
 		var boolQuery = BoolQuery.of((builder -> {
+			List<Query> mustQueries = new ArrayList<>();
 
 			if (searchText == null || searchText.isBlank()) {
-				builder.must(
-						MatchAllQuery.of(mustBuilder -> mustBuilder.boost(1.0f))._toQuery()
-				);
+				mustQueries.add(MatchAllQuery.of(matchBuilder -> matchBuilder.boost(1.0f))._toQuery());
+
+
 			} else {
 				builder.minimumShouldMatch("1")
 						.should(
@@ -57,6 +63,11 @@ public class PostService {
 								MatchQuery.of(shouldBuilder -> shouldBuilder.field("content").query(searchText).fuzziness("2").operator(Operator.And).query(searchText))._toQuery()
 						).boost(1.0f);
 			}
+
+			String createdAt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+			mustQueries.add(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").from(createdAt))._toQuery());
+			builder.must(mustQueries);
+
 			return builder;
 		}));
 

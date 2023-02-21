@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Getter
 @Setter
 @Builder
-public class User {
+public class FeedUser {
 
 	@Id
 	public String id;

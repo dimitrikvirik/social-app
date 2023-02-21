@@ -1,6 +1,6 @@
 package git.dimitrikvirik.feedapi.service;
 
-import git.dimitrikvirik.feedapi.model.domain.User;
+import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,12 @@ public class UserService {
 	private final UserRepository userRepository;
 
 
-	public Mono<User> userById(String id) {
+	public Mono<FeedUser> userById(String id) {
 		return userRepository.findById(id);
 	}
 
-	public Disposable save(User user) {
-		return userRepository.save(user).subscribe();
+	public Disposable save(FeedUser feedUser) {
+		return userRepository.save(feedUser).subscribe();
 	}
 
 }

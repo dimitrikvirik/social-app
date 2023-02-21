@@ -1,7 +1,7 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.model.kafka.UserDTO;
-import git.dimitrikvirik.feedapi.model.domain.User;
+import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +26,7 @@ public class UserFacade {
 		kafkaTemplate.receiveAutoAck().map(record ->
 				{
 					UserDTO value = record.value();
-					return User.builder()
+					return FeedUser.builder()
 							.firstname(value.getFirstName())
 							.lastname(value.getLastName())
 							.photo(value.getProfile())
