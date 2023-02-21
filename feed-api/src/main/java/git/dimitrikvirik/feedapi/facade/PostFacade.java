@@ -12,16 +12,21 @@ import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,23 +40,29 @@ public class PostFacade {
 
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
-		Flux<FeedTopic> feedTopicFlux = postRequest.flatMapMany(post -> topicService.findAllByIds(post.getTopics()));
+
+		Mono<Tuple2<PostRequest, List<FeedTopic>>> postRequestTuple = postRequest.zipWhen(post ->
+				topicService.findAllByIds(post.getTopics()).switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found"))).collectList());
+
+
 		Mono<FeedUser> feedUserMono = UserHelper.currentUserId().flatMap(userService::userById);
 
-		return Mono.zip(feedUserMono, feedTopicFlux.collectList(), postRequest).flatMap(tuple -> {
-			if (tuple.getT2().isEmpty())
-				return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"));
+		return Mono.zip(postRequestTuple, feedUserMono).flatMap(tuple -> {
+			PostRequest request = tuple.getT1().getT1();
+			List<FeedTopic> topics = tuple.getT1().getT2();
+			FeedUser feedUser = tuple.getT2();
+
 
 			FeedPost feedPost = FeedPost.builder()
-					.feedUser(tuple.getT1())
-					.title(tuple.getT3().getTitle())
-					.content(tuple.getT3().getContent())
+					.id(UUID.randomUUID().toString())
+					.title(request.getTitle())
+					.content(request.getContent())
+					.topics(topics)
+					.feedUser(feedUser)
 					.createdAt(LocalDateTime.now())
-					.topics(tuple.getT2())
 					.build();
-			return postService.save(feedPost).map(PostMapper::toPostResponseEntityCreated);
-		});
-
+			return postService.save(feedPost);
+		}).map(PostMapper::toPostResponseEntityCreated);
 	}
 
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {

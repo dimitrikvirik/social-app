@@ -39,12 +39,16 @@ public class ElasticsearchBuilder {
 		private Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>> builder;
 
 		public Builder<T> modifyQuery(Function<BoolQuery.Builder, BoolQuery.Builder> fn) {
+			if (builder == null)
+				initBuilder();
+
+
 			builder = builder.compose(fn);
 			return this;
 		}
 
-		public Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>> getBuilder() {
-			Function<BoolQuery.Builder, BoolQuery.Builder> builderBuilderFunction = (builder) -> {
+		private void initBuilder() {
+			builder = (builder) -> {
 
 				if (searchText == null || searchText.isBlank()) {
 					builder.must(MatchAllQuery.of(matchBuilder -> matchBuilder.boost(1.0f))._toQuery());
@@ -58,11 +62,12 @@ public class ElasticsearchBuilder {
 				}
 				return builder;
 			};
-			return builder.compose(builderBuilderFunction);
-
 		}
 
 		public Flux<T> doSearch() {
+			if (builder == null)
+				initBuilder();
+
 			var boolQuery = BoolQuery.of(getBuilder());
 
 
