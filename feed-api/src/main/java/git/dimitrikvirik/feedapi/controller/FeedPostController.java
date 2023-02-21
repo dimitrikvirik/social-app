@@ -29,7 +29,7 @@ public class FeedPostController implements PostApi {
 	}
 
 	@Override
-	public Mono<ResponseEntity<PostResponse>> deletePost(String id, ServerWebExchange exchange) {
+	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
 		return postFacade.deletePost(id, exchange);
 	}
 

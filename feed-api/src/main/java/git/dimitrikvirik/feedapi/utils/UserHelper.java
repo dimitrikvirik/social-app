@@ -1,4 +1,4 @@
-package git.dimitrikvirik.feedapi;
+package git.dimitrikvirik.feedapi.utils;
 
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;

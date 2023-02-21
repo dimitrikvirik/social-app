@@ -18,8 +18,8 @@ public class UserService {
 		return userRepository.findById(id);
 	}
 
-	public Disposable save(FeedUser feedUser) {
-		return userRepository.save(feedUser).subscribe();
+	public Mono<FeedUser> save(FeedUser feedUser) {
+		return userRepository.save(feedUser);
 	}
 
 }

@@ -2,6 +2,7 @@ package git.dimitrikvirik.feedapi.mapper;
 
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.generated.feedapi.model.TopicResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 
@@ -10,8 +11,16 @@ import java.util.stream.Collectors;
 
 public class PostMapper {
 
-	public static ResponseEntity<PostResponse> toPostResponseEntity(FeedPost post) {
-		return ResponseEntity.ok(toPostResponse(post));
+	public static ResponseEntity<PostResponse> toPostResponseEntityOk(FeedPost post) {
+		return toPostResponseEntity(post, HttpStatus.OK);
+	}
+
+	public static ResponseEntity<PostResponse> toPostResponseEntityCreated(FeedPost post) {
+		return toPostResponseEntity(post, HttpStatus.CREATED);
+	}
+
+	public static ResponseEntity<PostResponse> toPostResponseEntity(FeedPost post, HttpStatus status) {
+		return new ResponseEntity<>(toPostResponse(post), status);
 	}
 
 	public static PostResponse toPostResponse(FeedPost post) {
@@ -30,4 +39,7 @@ public class PostMapper {
 	}
 
 
+	public static ResponseEntity<Void> toPostResponseEntityNoContent(Void unused) {
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 }

@@ -64,8 +64,8 @@ paths:
               $ref: '#/components/schemas/PostRequest'
         required: true
       responses:
-        '200':
-          description: OK
+        '201':
+          description: created
           content:
             application/json:
               schema:
@@ -169,7 +169,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: OK
           content:
             application/json:
@@ -213,12 +213,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PostResponse'
         '400':
           description: Bad Request
           content:
@@ -458,10 +454,6 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TopicResponse'
         '400':
           description: Bad Request
           content:

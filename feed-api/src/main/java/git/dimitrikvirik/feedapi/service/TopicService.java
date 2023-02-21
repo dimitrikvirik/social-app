@@ -1,8 +1,14 @@
 package git.dimitrikvirik.feedapi.service;
 
+import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedTopic;
 import git.dimitrikvirik.feedapi.repository.TopicRepository;
+import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -16,12 +22,14 @@ public class TopicService {
 
 	private final TopicRepository topicRepository;
 
-	public Disposable save(FeedTopic feedTopic) {
-		return topicRepository.save(feedTopic).subscribe();
+	private final ReactiveElasticsearchOperations operations;
+
+	public Mono<FeedTopic> save(FeedTopic feedTopic) {
+		return topicRepository.save(feedTopic);
 	}
 
-	public Disposable deleteById(String id) {
-		return topicRepository.deleteById(id).subscribe();
+	public Mono<Void> deleteById(String id) {
+		return topicRepository.deleteById(id);
 	}
 
 
@@ -29,13 +37,22 @@ public class TopicService {
 		return topicRepository.findById(id);
 	}
 
-	public Flux<FeedTopic> findAll() {
-		return topicRepository.findAll();
+	public Flux<FeedTopic> findAll(Integer page, Integer size, String searchText) {
+		return ElasticsearchBuilder.create(
+				FeedTopic.class,
+				PageRequest.of(page, size),
+				List.of("name"),
+				searchText,
+				operations
+		).doSearch();
 	}
 
-	public Flux<FeedTopic> findAllByIds(List<String> id){
+	public Flux<FeedTopic> findAllByIds(List<String> id) {
 		return topicRepository.findAllById(id);
 	}
 
 
+	public Mono<Void> delete(FeedTopic feedTopic) {
+		return topicRepository.delete(feedTopic);
+	}
 }

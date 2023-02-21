@@ -34,7 +34,7 @@ public class UserFacade {
 							.build();
 
 				}
-		).map(userService::save).log().subscribe();
+		).flatMap(userService::save).log().subscribe();
 	}
 
 

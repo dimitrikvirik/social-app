@@ -1,7 +1,7 @@
 package git.dimitrikvirik.feedapi.facade;
 
 
-import git.dimitrikvirik.feedapi.UserHelper;
+import git.dimitrikvirik.feedapi.utils.UserHelper;
 import git.dimitrikvirik.feedapi.mapper.PostMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedTopic;
@@ -49,24 +49,20 @@ public class PostFacade {
 					.createdAt(LocalDateTime.now())
 					.topics(tuple.getT2())
 					.build();
-			return postService.save(feedPost).map(PostMapper::toPostResponseEntity);
+			return postService.save(feedPost).map(PostMapper::toPostResponseEntityCreated);
 		});
 
 	}
 
-	public Mono<ResponseEntity<PostResponse>> deletePost(String id, ServerWebExchange exchange) {
-		return postService.getById(id)
-				.map(post -> {
-					postService.deleteById(id);
-					return PostMapper.toPostResponseEntity(post);
-				}).defaultIfEmpty(ResponseEntity.notFound().build());
-
+	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
+		return postService.getById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")))
+				.flatMap(postService::delete).map(PostMapper::toPostResponseEntityNoContent);
 	}
 
 
 	public Mono<ResponseEntity<PostResponse>> getPostById(String id, ServerWebExchange exchange) {
 		return postService.getById(id)
-				.map(PostMapper::toPostResponseEntity)
+				.map(PostMapper::toPostResponseEntityOk)
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 
 	}
@@ -86,16 +82,13 @@ public class PostFacade {
 			feedPost.setTitle(feedPost.getTitle());
 			feedPost.setContent(feedPost.getContent());
 			feedPost.setTopics(feedTopics);
-			return postService.save(feedPost).map(PostMapper::toPostResponseEntity);
+			return postService.save(feedPost).map(PostMapper::toPostResponseEntityOk);
 		});
 
 	}
 
 	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, ServerWebExchange exchange) {
-		Flux<PostResponse> postResponseFlux = postService.getAll(page, size, searchText).map(PostMapper::toPostResponse);
-
-		return Mono.just(ResponseEntity.ok(postResponseFlux));
-
+		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, searchText).map(PostMapper::toPostResponse)));
 	}
 
 
