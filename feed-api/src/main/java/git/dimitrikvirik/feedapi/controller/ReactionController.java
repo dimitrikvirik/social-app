@@ -37,8 +37,8 @@ public class ReactionController implements ReactionApi {
 		return reactionFacade.getReactionById(id, exchange);
 	}
 
-//	@Override
-//	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
-//		return reactionFacade.updateReaction(id, reactionRequest, exchange);
-//	}
+	@Override
+	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
+		return reactionFacade.updateReaction(id, reactionRequest, exchange);
+	}
 }

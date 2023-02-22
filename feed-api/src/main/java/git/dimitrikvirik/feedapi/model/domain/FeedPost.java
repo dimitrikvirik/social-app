@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class FeedPost {
+public class FeedPost implements UserResource {
 	@Id
 	private String id;
 
@@ -31,7 +31,13 @@ public class FeedPost {
 
 	private Integer dislike = 0;
 
+	private Integer commentCount = 0;
+
 	@Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
 	private LocalDateTime createdAt;
 
+	@Override
+	public String getUserId() {
+		return feedUser.getId();
+	}
 }

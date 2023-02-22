@@ -34,7 +34,7 @@ public class TopicFacade {
 	}
 
 	public Mono<ResponseEntity<Void>> deleteTopic(String id) {
-		return topicService.findById(id)
+		return topicService.getById(id)
 				.flatMap(topicService::delete)
 				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
@@ -44,12 +44,12 @@ public class TopicFacade {
 	}
 
 	public Mono<ResponseEntity<TopicResponse>> getTopicById(String id) {
-		return topicService.findById(id).map(TopicMapper::toTopicResponseEntityOK);
+		return topicService.getById(id).map(TopicMapper::toTopicResponseEntityOK);
 	}
 
 	public Mono<ResponseEntity<TopicResponse>> updateTopic(String id, Mono<TopicRequest> topicRequest) {
 		return topicRequest.zipWith(
-				topicService.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found")))
+				topicService.getById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found")))
 		).map(tuple -> {
 			TopicRequest topicRequest1 = tuple.getT1();
 			FeedTopic feedTopic = tuple.getT2();

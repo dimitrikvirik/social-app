@@ -52,10 +52,9 @@ public class ReactionFacade {
 							.userId(userId)
 							.reactionType(ReactionType.valueOf(request.getType().name()))
 							.build();
-					return reactionService.createReaction(feedReaction);
+					return reactionService.save(feedReaction);
 				})
-				.zipWhen(feedReaction -> postService.getById(feedReaction.getPostId()).doOnNext(feedPost ->
-						{
+				.zipWhen(feedReaction -> postService.getById(feedReaction.getPostId()).doOnNext(feedPost -> {
 							if (feedReaction.getReactionType().equals(ReactionType.LIKE)) {
 								feedPost.setLike(feedPost.getLike() + 1);
 							} else if (feedReaction.getReactionType().equals(ReactionType.DISLIKE)) {
@@ -74,30 +73,22 @@ public class ReactionFacade {
 	}
 
 	public Mono<ResponseEntity<Void>> deleteReaction(String id, ServerWebExchange exchange) {
-		return UserHelper.currentUserId().zipWith(reactionService.getById(id)).flatMap(tuple -> {
-			String userId = tuple.getT1();
-			FeedReaction feedReaction = tuple.getT2();
-			if (!feedReaction.getUserId().equals(userId)) {
-				return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not owner of reaction"));
-			}
-			return reactionService.delete(feedReaction);
-		}).map(feedReaction -> new ResponseEntity<Void>(HttpStatus.NO_CONTENT));
+		return reactionService.getByIdValidated(id).flatMap(reactionService::delete).then(Mono.just(ResponseEntity.noContent().build()));
 	}
 
 	public Mono<ResponseEntity<ReactionResponse>> getReactionById(String id, ServerWebExchange exchange) {
 		return reactionService.getById(id).map(ReactionMapper::toReactionResponseEntityOk);
 	}
 
-//	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
-//		reactionService.getById(id).zipWith(UserHelper.currentUserId()).handle((tuple, sink) -> {
-//			FeedReaction feedReaction = tuple.getT1();
-//			String userId = tuple.getT2();
-//			if (feedReaction.getUserId().equals(userId)) {
-//				sink.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not owner of reaction"));
-//			}
-//		}
-
-
-
-
+	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
+		return reactionRequest.zipWith(reactionService.getByIdValidated(id))
+				.flatMap(tuple2 -> {
+					ReactionRequest request = tuple2.getT1();
+					FeedReaction feedReaction = tuple2.getT2();
+					feedReaction.setReactionType(ReactionType.valueOf(request.getType().name()));
+					return reactionService.save(feedReaction);
+				}).map(ReactionMapper::toReactionResponseEntityOk);
 	}
+
+
+}

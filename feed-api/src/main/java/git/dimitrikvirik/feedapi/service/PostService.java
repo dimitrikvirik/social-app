@@ -4,39 +4,25 @@ import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.repository.PostRepository;
 import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class PostService {
-
-	private final PostRepository postRepository;
-
+public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 	private final ReactiveElasticsearchOperations operations;
 
-
-	public Mono<FeedPost> save(FeedPost post) {
-		return postRepository.save(post);
+	public PostService(PostRepository postRepository, ReactiveElasticsearchOperations operations) {
+		super(postRepository);
+		this.operations = operations;
 	}
 
-	public Mono<FeedPost> getById(String id) {
-		return postRepository.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")));
-	}
-
-	public Mono<Void> deleteById(String id) {
-		return postRepository.deleteById(id);
-	}
 
 	public Flux<FeedPost> getAll(Integer page, Integer size, String searchText) {
 		return ElasticsearchBuilder.create(
@@ -53,7 +39,5 @@ public class PostService {
 				}).doSearch();
 	}
 
-	public Mono<Void> delete(FeedPost post) {
-		return   postRepository.delete(post);
-	}
+
 }

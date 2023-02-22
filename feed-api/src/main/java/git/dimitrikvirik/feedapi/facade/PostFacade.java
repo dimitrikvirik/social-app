@@ -59,7 +59,7 @@ public class PostFacade {
 	}
 
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
-		return getValidFeedPost(id)
+		return postService.getByIdValidated(id)
 				.flatMap(postService::delete)
 				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
@@ -75,7 +75,7 @@ public class PostFacade {
 	public Mono<ResponseEntity<PostResponse>> updatePost(String id, Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
 		return postRequest.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList()).zipWith(
-				getValidFeedPost(id)
+				postService.getByIdValidated(id)
 		).flatMap(
 				tuple -> {
 					PostRequest request = tuple.getT1().getT1();
@@ -92,19 +92,6 @@ public class PostFacade {
 
 	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, ServerWebExchange exchange) {
 		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, searchText).map(PostMapper::toPostResponse)));
-	}
-
-	@NotNull
-	private Mono<FeedPost> getValidFeedPost(String id) {
-		return postService.getById(id).zipWith(UserHelper.currentUserId())
-				.flatMap(tuple -> {
-					FeedPost feedPost = tuple.getT1();
-					String userId = tuple.getT2();
-					if (!feedPost.getFeedUser().getId().equals(userId)) {
-						return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update other user's post"));
-					}
-					return Mono.just(feedPost);
-				});
 	}
 
 

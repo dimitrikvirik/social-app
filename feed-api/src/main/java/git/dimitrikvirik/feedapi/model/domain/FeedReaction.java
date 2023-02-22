@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Getter
 @Setter
 @Builder
-public class FeedReaction {
+public class FeedReaction implements UserResource {
 
 	@Id
 	private String id;

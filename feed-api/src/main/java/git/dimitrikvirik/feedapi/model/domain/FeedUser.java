@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Getter
 @Setter
 @Builder
-public class FeedUser {
+public class FeedUser implements UserResource {
 
 	@Id
 	public String id;
@@ -22,4 +22,8 @@ public class FeedUser {
 
 	private String photo;
 
+	@Override
+	public String getUserId() {
+		return id;
+	}
 }

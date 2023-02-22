@@ -39,7 +39,7 @@ public class UserFacade {
 
 
 	public Mono<ResponseEntity<UserResponse>> getUserById(String id, ServerWebExchange exchange) {
-		return userService.userById(id)
+		return userService.getById(id)
 				.map(user -> ResponseEntity.ok(UserResponse.builder()
 						.id(user.getId())
 						.firstname(user.getFirstname())
