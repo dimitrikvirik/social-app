@@ -23,8 +23,8 @@ public class MinioService {
 	@Value("${minio.bucket}")
 	private String bucket;
 
-	@Value("${minio.url}")
-	private String url;
+	@Value("${minio.publicUrl}")
+	private String publicUrl;
 
 	public String upload(MultipartFile file) {
 		try {
@@ -42,7 +42,7 @@ public class MinioService {
 
 			minioClient.uploadObject(uploadObjectArgs);
 			tempFile.delete();
-			return url + "/" + bucket + "/" + filename;
+			return publicUrl + "/" + bucket + "/" + filename;
 		} catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Minio error");
 		}

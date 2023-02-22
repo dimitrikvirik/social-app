@@ -108,6 +108,12 @@ public class UserFacade {
 		User user = userService.findById(id);
 		String url = minioService.upload(file);
 		user.setProfile(url);
+		try {
+			UserDTO userDTO = UserMapper.toUserDTO(user);
+			kafkaTemplate.send("user", objectMapper.writeValueAsString(userDTO));
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 		return UserMapper.toFullUserResponse(userService.save(user));
 	}
 }
