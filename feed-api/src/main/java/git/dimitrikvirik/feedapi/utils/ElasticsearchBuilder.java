@@ -59,7 +59,7 @@ public class ElasticsearchBuilder {
 									searchingFields.stream()
 											.map(field -> MatchQuery.of(shouldBuilder -> shouldBuilder.field(field).query(searchText).fuzziness("2").operator(Operator.And).query(searchText))._toQuery())
 											.toList()
-							).boost(1.0f);
+							).boost(20.0f);
 				}
 				return builder;
 			};

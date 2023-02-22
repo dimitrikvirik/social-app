@@ -8,21 +8,18 @@ import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.service.PostService;
 import git.dimitrikvirik.feedapi.service.TopicService;
 import git.dimitrikvirik.feedapi.service.UserService;
-import git.dimitrikvirik.feedapi.utils.UserHelper;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,20 +39,23 @@ public class PostFacade {
 		return postRequest
 				.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList())
 				.zipWith(userService.currentUser())
-				.flatMap(tuple -> {
+				.map(tuple -> {
 					FeedUser feedUser = tuple.getT2();
 					List<FeedTopic> topics = tuple.getT1().getT2();
 					PostRequest request = tuple.getT1().getT1();
-					FeedPost feedPost = FeedPost.builder()
+					return FeedPost.builder()
 							.id(UUID.randomUUID().toString())
 							.title(request.getTitle())
+							.like(0)
+							.dislike(0)
+							.commentCount(0)
 							.content(request.getContent())
 							.topics(topics)
 							.feedUser(feedUser)
-							.createdAt(LocalDateTime.now())
+							.createdAt(ZonedDateTime.now())
+							.updatedAt(ZonedDateTime.now())
 							.build();
-					return postService.save(feedPost);
-				}).map(PostMapper::toPostResponseEntityCreated);
+				}).flatMap(postService::save).map(PostMapper::toPostResponseEntityCreated);
 	}
 
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
@@ -83,6 +83,7 @@ public class PostFacade {
 					feedPost.setTitle(request.getTitle());
 					feedPost.setContent(request.getContent());
 					feedPost.setTopics(tuple.getT1().getT2());
+					feedPost.setUpdatedAt(ZonedDateTime.now());
 					return postService.save(feedPost);
 				}
 		).map(PostMapper::toPostResponseEntityOk);

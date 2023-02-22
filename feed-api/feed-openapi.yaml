@@ -124,7 +124,7 @@ paths:
         '200':
           description: OK
           content:
-           application/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -363,7 +363,7 @@ paths:
         '200':
           description: OK
           content:
-           application/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -554,7 +554,7 @@ paths:
         '201':
           description: Created
           content:
-           application/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -711,56 +711,383 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-        tags:
-            - Reaction
-        summary: Update reaction
-        description: Update reaction
-        operationId: updateReaction
-        parameters:
-            - name: id
-              in: path
-              description: id of reaction
-              required: true
+      tags:
+        - Reaction
+      summary: Update reaction
+      description: Update reaction
+      operationId: updateReaction
+      parameters:
+        - name: id
+          in: path
+          description: id of reaction
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReactionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
               schema:
-                  type: string
-        requestBody:
-            content:
-              application/json:
-                  schema:
-                    $ref: '#/components/schemas/ReactionRequest'
-        responses:
-            '200':
-              description: OK
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/ReactionResponse'
-            '400':
-              description: Bad Request
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/ErrorResponse'
-            '401':
-              description: Unauthorized
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/ErrorResponse'
-            '404':
-              description: Not Found
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/ErrorResponse'
-            '500':
-              description: Internal Server Error
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ReactionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /comment:
+    get:
+      tags:
+        - Comment
+      summary: Get all comments
+      description: Get all comments
+      operationId: getAllComments
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          required: true
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: size of page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Comment
+      summary: Create comment
+      description: Create comment
+      operationId: createComment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /comment/{id}:
+    get:
+      tags:
+        - Comment
+      summary: Get comment by id
+      description: Get comment by id
+      operationId: getCommentById
+      parameters:
+        - name: id
+          in: path
+          description: id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Comment
+      summary: Delete comment
+      description: Delete comment
+      operationId: deleteComment
+      parameters:
+        - name: id
+          in: path
+          description: id of comment
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Comment
+      summary: Update comment
+      description: Update comment
+      operationId: updateComment
+      parameters:
+        - name: id
+          in: path
+          description: id of comment
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /notification:
+    get:
+      tags:
+        - Notification
+      summary: Get notifications
+      description: Get notifications
+      operationId: getNotifications
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          required: true
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: size of page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    NotificationResponse:
+      type: object
+      properties:
+        senderUser:
+          $ref: '#/components/schemas/UserResponse'
+        sourceResourceId:
+          type: string
+        sourceResourceType:
+          type: string
+          enum:
+            - REACTION
+            - COMMENT
+        seen:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    CommentRequest:
+      type: object
+      properties:
+        postId:
+          type: string
+        content:
+          type: string
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        postId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     ReactionRequest:
       type: object
       properties:
@@ -783,6 +1110,12 @@ components:
           enum:
             - LIKE
             - DISLIKE
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     TopicRequest:
       type: object
       properties:
@@ -821,14 +1154,16 @@ components:
           type: integer
         unlike:
           type: integer
-        createdAt:
-          type: string
         commentNumber:
           type: integer
         topics:
           type: array
           items:
             $ref: '#/components/schemas/TopicResponse'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
     UserResponse:
       type: object
       properties:

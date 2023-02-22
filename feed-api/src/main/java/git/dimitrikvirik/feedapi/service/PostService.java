@@ -1,9 +1,10 @@
 package git.dimitrikvirik.feedapi.service;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.repository.PostRepository;
 import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
+import git.dimitrikvirik.feedapi.utils.TimeFormat;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 						operations
 				)
 				.modifyQuery(builder -> {
-					String createdAt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+					String createdAt = ZonedDateTime.now().minusDays(2).format(TimeFormat.zoneDateTime);
 					builder.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").from(createdAt))._toQuery());
 					return builder;
 				}).doSearch();

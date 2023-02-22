@@ -18,6 +18,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Service
@@ -48,12 +50,14 @@ public class ReactionFacade {
 					}
 					FeedReaction feedReaction = FeedReaction.builder()
 							.id(UUID.randomUUID().toString())
+							.createdAt(ZonedDateTime.now())
 							.postId(request.getPostId())
 							.userId(userId)
 							.reactionType(ReactionType.valueOf(request.getType().name()))
 							.build();
 					return reactionService.save(feedReaction);
 				})
+				//TODO notification
 				.zipWhen(feedReaction -> postService.getById(feedReaction.getPostId()).doOnNext(feedPost -> {
 							if (feedReaction.getReactionType().equals(ReactionType.LIKE)) {
 								feedPost.setLike(feedPost.getLike() + 1);
@@ -85,6 +89,7 @@ public class ReactionFacade {
 				.flatMap(tuple2 -> {
 					ReactionRequest request = tuple2.getT1();
 					FeedReaction feedReaction = tuple2.getT2();
+					feedReaction.setUpdatedAt(ZonedDateTime.now());
 					feedReaction.setReactionType(ReactionType.valueOf(request.getType().name()));
 					return reactionService.save(feedReaction);
 				}).map(ReactionMapper::toReactionResponseEntityOk);

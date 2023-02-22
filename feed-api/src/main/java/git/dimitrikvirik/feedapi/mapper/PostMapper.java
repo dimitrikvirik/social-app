@@ -1,12 +1,14 @@
 package git.dimitrikvirik.feedapi.mapper;
 
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
+import git.dimitrikvirik.feedapi.utils.TimeFormat;
 import git.dimitrikvirik.generated.feedapi.model.TopicResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import reactor.core.publisher.Mono;
 
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 
@@ -28,6 +30,11 @@ public class PostMapper {
 		return PostResponse.builder()
 				.title(post.getTitle())
 				.id(post.getId())
+				.like(post.getLike())
+				.createdAt(post.getCreatedAt().format(TimeFormat.zoneDateTime))
+				.updatedAt(post.getUpdatedAt().format(TimeFormat.zoneDateTime))
+				.unlike(post.getDislike())
+				.commentNumber(post.getCommentCount())
 				.user(UserMapper.fromUser(post.getFeedUser()))
 				.topics(post.getTopics().stream().map(feedTopic ->
 						TopicResponse
