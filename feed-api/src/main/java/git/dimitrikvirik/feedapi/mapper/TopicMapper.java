@@ -36,9 +36,6 @@ public class TopicMapper {
 		return toTopicResponseEntity(feedTopic, HttpStatus.CREATED);
 	}
 
-	public static ResponseEntity<Void> toTopicResponseEntityNoContent(Void v) {
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
 
 
 }

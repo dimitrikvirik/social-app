@@ -34,8 +34,9 @@ public class TopicFacade {
 	}
 
 	public Mono<ResponseEntity<Void>> deleteTopic(String id) {
-		return topicService.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found")))
-				.flatMap(topicService::delete).map(TopicMapper::toTopicResponseEntityNoContent);
+		return topicService.findById(id)
+				.flatMap(topicService::delete)
+				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
 
 	public Mono<ResponseEntity<Flux<TopicResponse>>> getAllTopics(Integer page, Integer size, String searchText) {

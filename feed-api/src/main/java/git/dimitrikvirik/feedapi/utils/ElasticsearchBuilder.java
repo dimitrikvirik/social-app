@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -82,6 +83,10 @@ public class ElasticsearchBuilder {
 		}
 
 
+	}
+
+	public static <T> Builder<T> create(Class<T> clazz, PageRequest pageRequest, ReactiveElasticsearchOperations operations) {
+		return new Builder<>(clazz, pageRequest, Collections.emptyList(), null, operations);
 	}
 
 	public static <T> Builder<T> create(Class<T> clazz, PageRequest pageRequest, List<String> searchingFields, String searchText, ReactiveElasticsearchOperations operations) {

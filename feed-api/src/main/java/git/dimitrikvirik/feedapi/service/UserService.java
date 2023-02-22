@@ -2,6 +2,7 @@ package git.dimitrikvirik.feedapi.service;
 
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.repository.UserRepository;
+import git.dimitrikvirik.feedapi.utils.UserHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class UserService {
 
 	public Mono<FeedUser> save(FeedUser feedUser) {
 		return userRepository.save(feedUser);
+	}
+
+	public Mono<FeedUser> currentUser() {
+		return UserHelper.currentUserId().flatMap(this::userById);
 	}
 
 }

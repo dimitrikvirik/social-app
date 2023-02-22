@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -20,4 +21,24 @@ public class ReactionController implements ReactionApi {
 	public Mono<ResponseEntity<ReactionResponse>> createReaction(Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
 		return reactionFacade.createReaction(reactionRequest, exchange);
 	}
+
+	@Override
+	public Mono<ResponseEntity<Flux<ReactionResponse>>> getAllReactions(Integer page, Integer size, ServerWebExchange exchange) {
+		return reactionFacade.getAllReactions(page, size, exchange);
+	}
+
+	@Override
+	public Mono<ResponseEntity<Void>> deleteReaction(String id, ServerWebExchange exchange) {
+		return reactionFacade.deleteReaction(id, exchange);
+	}
+
+	@Override
+	public Mono<ResponseEntity<ReactionResponse>> getReactionById(String id, ServerWebExchange exchange) {
+		return reactionFacade.getReactionById(id, exchange);
+	}
+
+//	@Override
+//	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
+//		return reactionFacade.updateReaction(id, reactionRequest, exchange);
+//	}
 }

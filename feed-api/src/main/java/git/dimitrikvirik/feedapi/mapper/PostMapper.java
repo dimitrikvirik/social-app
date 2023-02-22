@@ -5,6 +5,7 @@ import git.dimitrikvirik.generated.feedapi.model.TopicResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
+import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
 
@@ -39,7 +40,4 @@ public class PostMapper {
 	}
 
 
-	public static ResponseEntity<Void> toPostResponseEntityNoContent(Void unused) {
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
 }

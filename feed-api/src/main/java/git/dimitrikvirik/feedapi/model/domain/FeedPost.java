@@ -27,7 +27,9 @@ public class FeedPost {
 
 	private List<FeedTopic> topics;
 
-	private Integer rating = 0;
+	private Integer like = 0;
+
+	private Integer dislike = 0;
 
 	@Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
 	private LocalDateTime createdAt;

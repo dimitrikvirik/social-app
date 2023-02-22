@@ -7,7 +7,9 @@ import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -29,7 +31,7 @@ public class PostService {
 	}
 
 	public Mono<FeedPost> getById(String id) {
-		return postRepository.findById(id);
+		return postRepository.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")));
 	}
 
 	public Mono<Void> deleteById(String id) {
@@ -52,6 +54,6 @@ public class PostService {
 	}
 
 	public Mono<Void> delete(FeedPost post) {
-		return postRepository.delete(post);
+		return   postRepository.delete(post);
 	}
 }

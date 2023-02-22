@@ -12,6 +12,7 @@ import git.dimitrikvirik.feedapi.utils.UserHelper;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,33 +39,29 @@ public class PostFacade {
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
-		Mono<Tuple2<PostRequest, List<FeedTopic>>> postRequestTuple = postRequest.zipWhen(post ->
-				topicService.findAllByIds(post.getTopics()).switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found"))).collectList());
-
-
-		Mono<FeedUser> feedUserMono = UserHelper.currentUserId().flatMap(userService::userById);
-
-		return Mono.zip(postRequestTuple, feedUserMono).flatMap(tuple -> {
-			PostRequest request = tuple.getT1().getT1();
-			List<FeedTopic> topics = tuple.getT1().getT2();
-			FeedUser feedUser = tuple.getT2();
-
-
-			FeedPost feedPost = FeedPost.builder()
-					.id(UUID.randomUUID().toString())
-					.title(request.getTitle())
-					.content(request.getContent())
-					.topics(topics)
-					.feedUser(feedUser)
-					.createdAt(LocalDateTime.now())
-					.build();
-			return postService.save(feedPost);
-		}).map(PostMapper::toPostResponseEntityCreated);
+		return postRequest
+				.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList())
+				.zipWith(userService.currentUser())
+				.flatMap(tuple -> {
+					FeedUser feedUser = tuple.getT2();
+					List<FeedTopic> topics = tuple.getT1().getT2();
+					PostRequest request = tuple.getT1().getT1();
+					FeedPost feedPost = FeedPost.builder()
+							.id(UUID.randomUUID().toString())
+							.title(request.getTitle())
+							.content(request.getContent())
+							.topics(topics)
+							.feedUser(feedUser)
+							.createdAt(LocalDateTime.now())
+							.build();
+					return postService.save(feedPost);
+				}).map(PostMapper::toPostResponseEntityCreated);
 	}
 
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
-		return postService.getById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")))
-				.flatMap(postService::delete).map(PostMapper::toPostResponseEntityNoContent);
+		return getValidFeedPost(id)
+				.flatMap(postService::delete)
+				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
 
 
@@ -76,27 +73,38 @@ public class PostFacade {
 	}
 
 	public Mono<ResponseEntity<PostResponse>> updatePost(String id, Mono<PostRequest> postRequest, ServerWebExchange exchange) {
-		Mono<String> currentUserId = UserHelper.currentUserId();
-		Mono<List<FeedTopic>> feedTopicFlux = postRequest.flatMapMany(post -> topicService.findAllByIds(post.getTopics())).collectList();
-		Mono<FeedPost> postMono = postService.getById(id);
-		return Mono.zip(currentUserId, feedTopicFlux, postMono).flatMap(post -> {
-			String userId = post.getT1();
-			List<FeedTopic> feedTopics = post.getT2();
-			FeedPost feedPost = post.getT3();
 
-			if (!feedPost.getFeedUser().getId().equals(userId))
-				return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update this post"));
+		return postRequest.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList()).zipWith(
+				getValidFeedPost(id)
+		).flatMap(
+				tuple -> {
+					PostRequest request = tuple.getT1().getT1();
+					FeedPost feedPost = tuple.getT2();
+					feedPost.setTitle(request.getTitle());
+					feedPost.setContent(request.getContent());
+					feedPost.setTopics(tuple.getT1().getT2());
+					return postService.save(feedPost);
+				}
+		).map(PostMapper::toPostResponseEntityOk);
 
-			feedPost.setTitle(feedPost.getTitle());
-			feedPost.setContent(feedPost.getContent());
-			feedPost.setTopics(feedTopics);
-			return postService.save(feedPost).map(PostMapper::toPostResponseEntityOk);
-		});
 
 	}
 
 	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, ServerWebExchange exchange) {
 		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, searchText).map(PostMapper::toPostResponse)));
+	}
+
+	@NotNull
+	private Mono<FeedPost> getValidFeedPost(String id) {
+		return postService.getById(id).zipWith(UserHelper.currentUserId())
+				.flatMap(tuple -> {
+					FeedPost feedPost = tuple.getT1();
+					String userId = tuple.getT2();
+					if (!feedPost.getFeedUser().getId().equals(userId)) {
+						return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update other user's post"));
+					}
+					return Mono.just(feedPost);
+				});
 	}
 
 

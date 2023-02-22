@@ -124,7 +124,7 @@ paths:
         '200':
           description: OK
           content:
-            text/event-stream:
+           application/json:
               schema:
                 type: array
                 items:
@@ -363,7 +363,7 @@ paths:
         '200':
           description: OK
           content:
-            text/event-stream:
+           application/json:
               schema:
                 type: array
                 items:
@@ -551,10 +551,10 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
-            text/event-stream:
+           application/json:
               schema:
                 type: array
                 items:
@@ -684,8 +684,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
         '400':
           description: Bad Request
           content:
