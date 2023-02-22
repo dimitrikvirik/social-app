@@ -3,6 +3,7 @@ package git.dimitrikvirik.feedapi.config;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -46,6 +47,9 @@ public class SecurityConfig {
 				.authorizeExchange()
 				.pathMatchers("/api-docs", "/test")
 				.permitAll()
+				.pathMatchers(HttpMethod.DELETE, "/topic/**").hasRole("admin")
+				.pathMatchers(HttpMethod.POST, "/topic").hasRole("admin")
+				.pathMatchers(HttpMethod.PUT, "/topic/**").hasRole("admin")
 				.anyExchange().authenticated()
 				.and()
 				.oauth2ResourceServer()

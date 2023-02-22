@@ -17,8 +17,6 @@ public class UserController implements UserApi {
 
 	@Override
 	public Mono<ResponseEntity<UserResponse>> getUserById(String id, ServerWebExchange exchange) {
-
-
 		return userFacade.getUserById(id, exchange);
 	}
 }

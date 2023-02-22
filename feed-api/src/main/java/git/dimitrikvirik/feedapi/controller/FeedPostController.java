@@ -4,18 +4,12 @@ import git.dimitrikvirik.feedapi.facade.PostFacade;
 import git.dimitrikvirik.generated.feedapi.api.PostApi;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
-import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor

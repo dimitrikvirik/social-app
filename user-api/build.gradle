@@ -13,6 +13,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.eclipse.angus:angus-activation:2.0.0'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -20,7 +22,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.0.2'
     implementation 'org.postgresql:postgresql:42.5.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    implementation 'org.keycloak:keycloak-spring-boot-starter:20.0.3'
+    implementation('org.keycloak:keycloak-spring-boot-starter:20.0.3')
+
     implementation 'org.keycloak:keycloak-admin-client:20.0.3'
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
 

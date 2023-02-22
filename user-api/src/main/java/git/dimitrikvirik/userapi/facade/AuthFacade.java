@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -80,7 +81,7 @@ public class AuthFacade {
 		if (user.getIsDisabled())
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is disabled");
 
-		return  LoginResponse
+		return LoginResponse
 				.builder()
 				.jwt(TokenMapper.fromKeycloak(serviceToken))
 				.user(UserMapper.toFullUserResponse(user))
