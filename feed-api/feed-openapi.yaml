@@ -528,10 +528,261 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-
+  /reaction:
+    get:
+      tags:
+        - Reaction
+      summary: Get all reactions
+      description: Get all reactions
+      operationId: getAllReactions
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          required: true
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: size of page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReactionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Reaction
+      summary: Create reaction
+      description: Create reaction
+      operationId: createReaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReactionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /reaction/{id}:
+    get:
+      tags:
+        - Reaction
+      summary: Get reaction by id
+      description: Get reaction by id
+      operationId: getReactionById
+      parameters:
+        - name: id
+          in: path
+          description: id of reaction
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Reaction
+      summary: Delete reaction
+      description: Delete reaction
+      operationId: deleteReaction
+      parameters:
+        - name: id
+          in: path
+          description: id of reaction
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+        tags:
+            - Reaction
+        summary: Update reaction
+        description: Update reaction
+        operationId: updateReaction
+        parameters:
+            - name: id
+              in: path
+              description: id of reaction
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/ReactionRequest'
+        responses:
+            '200':
+              description: OK
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/ReactionResponse'
+            '400':
+              description: Bad Request
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+            '401':
+              description: Unauthorized
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+            '404':
+              description: Not Found
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
+            '500':
+              description: Internal Server Error
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    ReactionRequest:
+      type: object
+      properties:
+        postId:
+          type: string
+        type:
+          type: string
+          enum:
+            - LIKE
+            - DISLIKE
+    ReactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        postId:
+          type: string
+        type:
+          type: string
+          enum:
+            - LIKE
+            - DISLIKE
     TopicRequest:
       type: object
       properties:
