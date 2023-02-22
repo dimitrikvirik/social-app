@@ -11,9 +11,12 @@ public abstract class AbstractService<T, R extends ReactiveElasticsearchReposito
 
 	protected final R repository;
 
+	protected final String indexName;
 
-	public AbstractService(R repository) {
+
+	public AbstractService(R repository, String indexName) {
 		this.repository = repository;
+		this.indexName = indexName;
 	}
 
 	public Mono<T> save(T entity) {
@@ -21,7 +24,7 @@ public abstract class AbstractService<T, R extends ReactiveElasticsearchReposito
 	}
 
 	public Mono<T> getById(String id) {
-		return repository.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")));
+		return repository.findById(id).switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, indexName + " not found")));
 	}
 
 	public Flux<T> findAllByIds(Iterable<String> ids) {

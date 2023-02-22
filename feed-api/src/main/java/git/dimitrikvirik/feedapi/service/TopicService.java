@@ -19,7 +19,7 @@ public class TopicService extends AbstractService<FeedTopic, TopicRepository> {
 	private final ReactiveElasticsearchOperations operations;
 
 	public TopicService(TopicRepository repository, ReactiveElasticsearchOperations operations) {
-		super(repository);
+		super(repository, "topic");
 		this.operations = operations;
 	}
 

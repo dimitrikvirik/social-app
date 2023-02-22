@@ -23,8 +23,8 @@ public class ReactionController implements ReactionApi {
 	}
 
 	@Override
-	public Mono<ResponseEntity<Flux<ReactionResponse>>> getAllReactions(Integer page, Integer size, ServerWebExchange exchange) {
-		return reactionFacade.getAllReactions(page, size, exchange);
+	public Mono<ResponseEntity<Flux<ReactionResponse>>> getAllReactions(Integer page, Integer size, String postId, ServerWebExchange exchange) {
+		return reactionFacade.getAllReactions(page, size, postId, exchange);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public class UserService extends AbstractUserService<FeedUser, UserRepository> {
 
 
 	public UserService(UserRepository repository) {
-		super(repository);
+		super(repository, "user");
 	}
 
 

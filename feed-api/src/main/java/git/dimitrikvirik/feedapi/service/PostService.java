@@ -21,7 +21,7 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 	private final ReactiveElasticsearchOperations operations;
 
 	public PostService(PostRepository postRepository, ReactiveElasticsearchOperations operations) {
-		super(postRepository);
+		super(postRepository, "post");
 		this.operations = operations;
 	}
 

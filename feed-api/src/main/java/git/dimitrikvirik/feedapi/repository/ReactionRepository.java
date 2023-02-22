@@ -8,4 +8,7 @@ public interface ReactionRepository extends ReactiveElasticsearchRepository<Feed
 
 
 	Mono<Boolean> existsByUserIdAndPostId(String userId, String postId);
+
+
+	Mono<Void> deleteAllByPostId(String postId);
 }

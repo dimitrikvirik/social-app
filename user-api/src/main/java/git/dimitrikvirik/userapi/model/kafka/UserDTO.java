@@ -17,5 +17,9 @@ public class UserDTO {
 
 	private String profile;
 
+	private Boolean commentNotificationEnabled;
+
+	private Boolean reactionNotificationEnabled;
+
 
 }

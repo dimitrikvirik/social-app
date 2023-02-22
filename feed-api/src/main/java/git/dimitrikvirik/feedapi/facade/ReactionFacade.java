@@ -1,8 +1,10 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.ReactionMapper;
+import git.dimitrikvirik.feedapi.model.domain.FeedNotification;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
+import git.dimitrikvirik.feedapi.model.enums.NotificationType;
 import git.dimitrikvirik.feedapi.model.enums.ReactionType;
 import git.dimitrikvirik.feedapi.service.PostService;
 import git.dimitrikvirik.feedapi.service.ReactionService;
@@ -12,11 +14,13 @@ import git.dimitrikvirik.generated.feedapi.model.ReactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.kafka.sender.SenderResult;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -29,6 +33,9 @@ public class ReactionFacade {
 
 	private final PostService postService;
 
+	private final ReactiveKafkaProducerTemplate<String, FeedNotification> kafkaTemplate; //TODO
+
+
 	public Mono<ResponseEntity<ReactionResponse>> createReaction(Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
 
 
@@ -38,41 +45,52 @@ public class ReactionFacade {
 					ReactionRequest request = tuple2.getT1();
 					String userId = tuple2.getT2();
 
-					return reactionService.findByPost(request.getPostId(), userId);
+					return reactionService.findByPost(request.getPostId(), userId).zipWith(
+							postService.getById(request.getPostId())
+					);
 				})
 				.flatMap(tuple2 -> {
-					Boolean hasReaction = tuple2.getT2();
+					String reactionId = UUID.randomUUID().toString();
+
 					ReactionRequest request = tuple2.getT1().getT1();
 					String userId = tuple2.getT1().getT2();
+					Boolean hasReaction = tuple2.getT2().getT1();
+					FeedPost feedPost = tuple2.getT2().getT2();
+
+					Mono<SenderResult<Void>> senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
+							.id(UUID.randomUUID().toString())
+							.seen(false)
+							.sourceResourceId(reactionId)
+							.type(NotificationType.REACTION)
+							.build()
+					);
+
 					if (hasReaction) {
 						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has reaction"));
 					}
+					if (request.getType().equals(ReactionRequest.TypeEnum.LIKE)) {
+						feedPost.setLike(feedPost.getLike() + 1);
+					} else if (request.getType().equals(ReactionRequest.TypeEnum.DISLIKE)) {
+						feedPost.setDislike(feedPost.getDislike() + 1);
+					}
+
+
 					FeedReaction feedReaction = FeedReaction.builder()
-							.id(UUID.randomUUID().toString())
+							.id(reactionId)
 							.createdAt(ZonedDateTime.now())
 							.updatedAt(ZonedDateTime.now())
 							.postId(request.getPostId())
 							.userId(userId)
 							.reactionType(ReactionType.valueOf(request.getType().name()))
 							.build();
-					return reactionService.save(feedReaction);
+					return senderResultMono.then(postService.save(feedPost)).then(reactionService.save(feedReaction));
 				})
-				//TODO notification
-				.zipWhen(feedReaction -> postService.getById(feedReaction.getPostId()).doOnNext(feedPost -> {
-							if (feedReaction.getReactionType().equals(ReactionType.LIKE)) {
-								feedPost.setLike(feedPost.getLike() + 1);
-							} else if (feedReaction.getReactionType().equals(ReactionType.DISLIKE)) {
-								feedPost.setDislike(feedPost.getDislike() + 1);
-							}
-						}
-				).flatMap(postService::save))
-				.map(tuple2 -> ReactionMapper.toReactionResponseEntityCreated(tuple2.getT1()));
+				.map(ReactionMapper::toReactionResponseEntityCreated);
 
 	}
 
-	public Mono<ResponseEntity<Flux<ReactionResponse>>> getAllReactions(Integer page, Integer size, ServerWebExchange exchange) {
-		Flux<ReactionResponse> responseFlux = UserHelper.currentUserId().flatMapMany(userId -> reactionService.getAllReactions(userId, page, size))
-				.map(ReactionMapper::toReactionResponse);
+	public Mono<ResponseEntity<Flux<ReactionResponse>>> getAllReactions(Integer page, Integer size, String postId, ServerWebExchange exchange) {
+		Flux<ReactionResponse> responseFlux = reactionService.getAllReactions(page, size, postId).map(ReactionMapper::toReactionResponse);
 		return Mono.just(new ResponseEntity<>(responseFlux, HttpStatus.OK));
 	}
 
@@ -95,7 +113,6 @@ public class ReactionFacade {
 	public Mono<ResponseEntity<ReactionResponse>> getReactionById(String id, ServerWebExchange exchange) {
 		return reactionService.getById(id).map(ReactionMapper::toReactionResponseEntityOk);
 	}
-
 
 
 }

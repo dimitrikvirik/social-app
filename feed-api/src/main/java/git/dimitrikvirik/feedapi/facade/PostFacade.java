@@ -5,9 +5,7 @@ import git.dimitrikvirik.feedapi.mapper.PostMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedTopic;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
-import git.dimitrikvirik.feedapi.service.PostService;
-import git.dimitrikvirik.feedapi.service.TopicService;
-import git.dimitrikvirik.feedapi.service.UserService;
+import git.dimitrikvirik.feedapi.service.*;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +15,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +28,10 @@ public class PostFacade {
 	private final UserService userService;
 
 	private final TopicService topicService;
+
+	private final ReactionService reactionService;
+
+	private final CommentService commentService;
 
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
@@ -58,9 +58,12 @@ public class PostFacade {
 				}).flatMap(postService::save).map(PostMapper::toPostResponseEntityCreated);
 	}
 
+
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
 		return postService.getByIdValidated(id)
 				.flatMap(postService::delete)
+				.then(reactionService.deleteAllByPostId(id))
+				.then(commentService.deleteAllByPostId(id))
 				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
 

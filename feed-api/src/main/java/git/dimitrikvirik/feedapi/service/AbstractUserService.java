@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono;
 
 public abstract class AbstractUserService<T extends UserResource, R extends ReactiveElasticsearchRepository<T, String>> extends AbstractService<T, R> {
 
-	public AbstractUserService(R repository) {
-		super(repository);
+	public AbstractUserService(R repository, String indexName) {
+		super(repository, indexName);
 	}
 
 	@NotNull

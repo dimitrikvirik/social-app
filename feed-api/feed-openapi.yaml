@@ -550,6 +550,12 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: postId
+          in: query
+          description: id of post
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Ok
@@ -732,6 +738,12 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: postId
+          in: query
+          description: id of post
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -1035,10 +1047,8 @@ components:
           type: string
         createdAt:
           type: string
-          format: date-time
         updatedAt:
           type: string
-          format: date-time
     ReactionRequest:
       type: object
       properties:

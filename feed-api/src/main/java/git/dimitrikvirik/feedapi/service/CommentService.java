@@ -1,10 +1,10 @@
 package git.dimitrikvirik.feedapi.service;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
+import git.dimitrikvirik.feedapi.model.domain.FeedComment;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
-import git.dimitrikvirik.feedapi.repository.ReactionRepository;
+import git.dimitrikvirik.feedapi.repository.CommentRepository;
 import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.stereotype.Service;
@@ -12,27 +12,21 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class ReactionService extends AbstractUserService<FeedReaction, ReactionRepository> {
+public class CommentService extends AbstractUserService<FeedComment, CommentRepository> {
 
 	private final ReactiveElasticsearchOperations operations;
-
-	public ReactionService(ReactionRepository repository, ReactiveElasticsearchOperations operations) {
-		super(repository, "reaction");
+	public CommentService(CommentRepository repository, ReactiveElasticsearchOperations operations) {
+		super(repository, "comment");
 		this.operations = operations;
 	}
 
-
-	public Mono<Boolean> findByPost(String postId, String userId) {
-		return repository.existsByUserIdAndPostId(userId, postId);
+	public Mono<Void> deleteAllByPostId(String id) {
+		return repository.deleteByPostId(id);
 	}
 
-	public Mono<Void> deleteAllByPostId(String postId) {
-		return repository.deleteAllByPostId(postId);
-	}
-
-	public Flux<FeedReaction> getAllReactions(Integer page, Integer size, String postId) {
+	public Flux<FeedComment> getAll(Integer page, Integer size, String postId) {
 		return ElasticsearchBuilder.create(
-				FeedReaction.class,
+				FeedComment.class,
 				PageRequest.of(page, size),
 				operations
 		).modifyQuery(builder ->
@@ -43,5 +37,4 @@ public class ReactionService extends AbstractUserService<FeedReaction, ReactionR
 				)
 		).doSearch();
 	}
-
 }

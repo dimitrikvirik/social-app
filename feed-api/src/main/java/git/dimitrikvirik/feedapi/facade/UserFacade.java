@@ -31,6 +31,8 @@ public class UserFacade {
 							.lastname(value.getLastName())
 							.photo(value.getProfile())
 							.id(value.getId())
+							.reactionNotificationEnabled(value.getReactionNotificationEnabled())
+							.commentNotificationEnabled(value.getCommentNotificationEnabled())
 							.build();
 
 				}

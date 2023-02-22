@@ -22,7 +22,7 @@ public class UserPref {
 	@Column(name = "comment_notification_enabled")
 	private Boolean commentNotificationEnabled = true;
 
-	@Column(name = "like_notification_enabled")
-	private Boolean likeNotificationEnabled = true;
+	@Column(name = "reaction_notification_enabled")
+	private Boolean reactionNotificationEnabled = true;
 
 }
