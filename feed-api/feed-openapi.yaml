@@ -551,8 +551,8 @@ paths:
             type: integer
             default: 10
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Ok
           content:
             application/json:
               schema:
@@ -595,8 +595,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ReactionRequest'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -686,55 +686,6 @@ paths:
       responses:
         '204':
           description: No Content
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    put:
-      tags:
-        - Reaction
-      summary: Update reaction
-      description: Update reaction
-      operationId: updateReaction
-      parameters:
-        - name: id
-          in: path
-          description: id of reaction
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReactionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReactionResponse'
         '400':
           description: Bad Request
           content:
@@ -1112,10 +1063,8 @@ components:
             - DISLIKE
         createdAt:
           type: string
-          format: date-time
         updatedAt:
           type: string
-          format: date-time
     TopicRequest:
       type: object
       properties:

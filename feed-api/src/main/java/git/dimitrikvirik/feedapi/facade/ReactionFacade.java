@@ -1,6 +1,7 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.ReactionMapper;
+import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
 import git.dimitrikvirik.feedapi.model.enums.ReactionType;
 import git.dimitrikvirik.feedapi.service.PostService;
@@ -16,9 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -51,6 +50,7 @@ public class ReactionFacade {
 					FeedReaction feedReaction = FeedReaction.builder()
 							.id(UUID.randomUUID().toString())
 							.createdAt(ZonedDateTime.now())
+							.updatedAt(ZonedDateTime.now())
 							.postId(request.getPostId())
 							.userId(userId)
 							.reactionType(ReactionType.valueOf(request.getType().name()))
@@ -77,23 +77,25 @@ public class ReactionFacade {
 	}
 
 	public Mono<ResponseEntity<Void>> deleteReaction(String id, ServerWebExchange exchange) {
-		return reactionService.getByIdValidated(id).flatMap(reactionService::delete).then(Mono.just(ResponseEntity.noContent().build()));
+		return reactionService.getByIdValidated(id)
+				.zipWhen(reaction -> postService.getById(reaction.getPostId()))
+				.flatMap(tuple2 -> {
+					FeedReaction reaction = tuple2.getT1();
+					FeedPost feedPost = tuple2.getT2();
+					if (reaction.getReactionType().equals(ReactionType.LIKE)) {
+						feedPost.setLike(tuple2.getT2().getLike() - 1);
+					} else if (reaction.getReactionType().equals(ReactionType.DISLIKE)) {
+						feedPost.setDislike(tuple2.getT2().getDislike() - 1);
+					}
+					return postService.save(feedPost).and(reactionService.delete(reaction));
+				})
+				.then(Mono.just(ResponseEntity.noContent().build()));
 	}
 
 	public Mono<ResponseEntity<ReactionResponse>> getReactionById(String id, ServerWebExchange exchange) {
 		return reactionService.getById(id).map(ReactionMapper::toReactionResponseEntityOk);
 	}
 
-	public Mono<ResponseEntity<ReactionResponse>> updateReaction(String id, Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
-		return reactionRequest.zipWith(reactionService.getByIdValidated(id))
-				.flatMap(tuple2 -> {
-					ReactionRequest request = tuple2.getT1();
-					FeedReaction feedReaction = tuple2.getT2();
-					feedReaction.setUpdatedAt(ZonedDateTime.now());
-					feedReaction.setReactionType(ReactionType.valueOf(request.getType().name()));
-					return reactionService.save(feedReaction);
-				}).map(ReactionMapper::toReactionResponseEntityOk);
-	}
 
 
 }
