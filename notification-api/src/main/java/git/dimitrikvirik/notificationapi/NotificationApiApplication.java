@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.web.client.RestTemplate;
 
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"git.dimitrikvirik"})
 @EnableDiscoveryClient
 @EnableKafka
 public class NotificationApiApplication {

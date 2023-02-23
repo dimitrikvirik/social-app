@@ -3,9 +3,12 @@ package git.dimitrikvirik.notificationapi.facade;
 import git.dimitrikvirik.notification.model.NotificationDTO;
 import git.dimitrikvirik.notificationapi.mapper.NotificationMapper;
 import git.dimitrikvirik.notificationapi.model.domain.Notification;
+import git.dimitrikvirik.notificationapi.model.kafka.NotificationKafka;
 import git.dimitrikvirik.notificationapi.service.NotificationService;
 import git.dimitrikvirik.notificationapi.util.UserHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,13 +19,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationFacade {
 
 	private final NotificationService notificationService;
 
 	@KafkaListener(topics = "notification", groupId = "notification-api")
-	public void kafkaListener() {
-
+	public void kafkaListener(ConsumerRecord<String, NotificationKafka> record) {
+		NotificationKafka value = record.value();
+		log.info("Received notification from kafka: {}", value);
 	}
 
 
