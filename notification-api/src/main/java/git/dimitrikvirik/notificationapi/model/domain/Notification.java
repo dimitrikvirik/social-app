@@ -2,10 +2,7 @@ package git.dimitrikvirik.notificationapi.model.domain;
 
 import git.dimitrikvirik.notificationapi.model.enums.NotificationType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.time.OffsetDateTime;
 @Table(name = "notifications")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Notification {

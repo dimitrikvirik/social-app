@@ -1,5 +1,6 @@
 package git.dimitrikvirik.notificationapi.service;
 
+import git.dimitrikvirik.notificationapi.model.domain.Notification;
 import git.dimitrikvirik.notificationapi.model.domain.NotificationSetting;
 import git.dimitrikvirik.notificationapi.repository.NotificationSettingRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,13 @@ public class NotificationSettingService {
 	}
 
 	public NotificationSetting findByUserId(String id) {
-		return repository.findById(id).orElseThrow(
+		return repository.findByUserId(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification setting not found")
 		);
+	}
+
+	public NotificationSetting saveIfNotExist(NotificationSetting notificationSetting) {
+		return repository.findById(notificationSetting.getUserId()).orElseGet(() -> repository.save(notificationSetting));
 	}
 
 }

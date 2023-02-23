@@ -13,6 +13,7 @@ public class NotificationMapper {
 				.seen(notification.getSeen())
 				.senderUserId(notification.getSenderUserId())
 				.sourceResourceId(notification.getSourceResourceId())
+				.type(NotificationDTO.TypeEnum.valueOf(notification.getType().name()))
 				.build();
 	}
 

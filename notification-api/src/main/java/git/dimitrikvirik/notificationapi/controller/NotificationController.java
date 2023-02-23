@@ -1,13 +1,19 @@
 package git.dimitrikvirik.notificationapi.controller;
 
 import git.dimitrikvirik.notification.api.NotificationApi;
-import git.dimitrikvirik.notification.model.Notification;
 import git.dimitrikvirik.notification.model.NotificationDTO;
 import git.dimitrikvirik.notificationapi.facade.NotificationFacade;
+import git.dimitrikvirik.notificationapi.mapper.NotificationMapper;
+import git.dimitrikvirik.notificationapi.model.domain.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -26,4 +32,11 @@ public class NotificationController implements NotificationApi {
 	public ResponseEntity<NotificationDTO> markNotificationAsSeen(String id) {
 		return notificationFacade.markNotificationAsSeen(id);
 	}
+
+	@MessageMapping("/notification")
+	@SendToUser
+	public NotificationDTO getNotificationsLive(@Payload Notification notification) {
+		return NotificationMapper.map(notification);
+	}
+
 }
