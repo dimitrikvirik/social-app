@@ -50,6 +50,8 @@ public class KeycloakService {
 	}
 
 	public String createUser(User user, String password) {
+
+
 		// Get the UsersResource for the realm
 		UsersResource usersResource = getUsersResource();
 

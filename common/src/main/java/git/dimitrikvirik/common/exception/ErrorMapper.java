@@ -1,13 +1,7 @@
-package git.dimitrikvirik.userapi.mapper;
+package git.dimitrikvirik.common.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import git.dimitrikvirik.userapi.model.ErrorResponse;
-import lombok.Data;
-import lombok.val;
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,10 +14,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Field;
-import java.rmi.ServerException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ErrorMapper {

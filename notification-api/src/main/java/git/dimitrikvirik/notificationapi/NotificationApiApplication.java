@@ -1,21 +1,20 @@
-package git.dimitrikvirik.userapi;
+package git.dimitrikvirik.notificationapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.web.client.RestTemplate;
 
 
-@SpringBootApplication(scanBasePackages = {"git.dimitrikvirik.userapi", "git.dimitrikvirik.common"})
+@SpringBootApplication
 @EnableDiscoveryClient
-@EnableScheduling
-public class UserApiApplication {
+@EnableKafka
+public class NotificationApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserApiApplication.class, args);
+		SpringApplication.run(NotificationApiApplication.class, args);
 	}
 
 

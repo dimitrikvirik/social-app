@@ -1,7 +1,5 @@
-package git.dimitrikvirik.userapi.controller;
+package git.dimitrikvirik.common.exception;
 
-import git.dimitrikvirik.userapi.mapper.ErrorMapper;
-import git.dimitrikvirik.userapi.model.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

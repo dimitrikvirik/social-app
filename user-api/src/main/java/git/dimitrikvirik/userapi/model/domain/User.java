@@ -22,11 +22,6 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_pref_id", referencedColumnName = "id")
-	private UserPref userPref;
-
 	@Column(name = "keycloak_id")
 	private String keycloakId;
 

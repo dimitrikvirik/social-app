@@ -1,4 +1,4 @@
-package git.dimitrikvirik.userapi.config;
+package git.dimitrikvirik.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
