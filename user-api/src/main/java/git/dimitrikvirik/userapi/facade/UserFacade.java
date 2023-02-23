@@ -82,8 +82,6 @@ public class UserFacade {
 		User user = userService.findById(id);
 		user.setFirstname(userUpdateRequest.getFirstName());
 		user.setLastname(userUpdateRequest.getLastName());
-		user.getUserPref().setCommentNotificationEnabled(userUpdateRequest.getCommentNotification());
-		user.getUserPref().setLikeNotificationEnabled(userUpdateRequest.getLikeNotification());
 		try {
 			UserDTO userDTO = UserMapper.toUserDTO(user);
 			kafkaTemplate.send("user", objectMapper.writeValueAsString(userDTO));

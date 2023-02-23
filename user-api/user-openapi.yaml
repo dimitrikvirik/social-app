@@ -747,10 +747,6 @@ components:
           type: string
         lastName:
           type: string
-        commentNotification:
-          type: boolean
-        likeNotification:
-          type: boolean
     EmailValidationApproveRequest:
       type: object
       properties:
@@ -785,10 +781,6 @@ components:
           type: string
         lastName:
           type: string
-        commentNotification:
-          type: boolean
-        likeNotification:
-          type: boolean
         createdAt:
           type: string
           format: date-time

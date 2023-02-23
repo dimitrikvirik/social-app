@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 
-@SpringBootApplication(scanBasePackages = {"git.dimitrikvirik.userapi", "git.dimitrikvirik.common"})
+@SpringBootApplication(scanBasePackages = {"git.dimitrikvirik"})
 @EnableDiscoveryClient
 @EnableScheduling
 public class UserApiApplication {

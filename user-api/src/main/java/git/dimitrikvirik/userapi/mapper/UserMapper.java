@@ -28,7 +28,6 @@ public class UserMapper {
 				.email(user.getEmail())
 				.createdAt(user.getCreatedAt().atOffset(ZoneOffset.UTC))
 				.updatedAt(user.getUpdatedAt().atOffset(ZoneOffset.UTC))
-				.commentNotification(user.getUserPref().getCommentNotificationEnabled())
 				.build();
 	}
 
