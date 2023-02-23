@@ -2,14 +2,13 @@ package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.CommentMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedComment;
-import git.dimitrikvirik.feedapi.model.domain.FeedNotification;
+import git.dimitrikvirik.feedapi.model.kafka.FeedNotification;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.model.enums.NotificationType;
 import git.dimitrikvirik.feedapi.service.CommentService;
 import git.dimitrikvirik.feedapi.service.PostService;
 import git.dimitrikvirik.feedapi.service.UserService;
-import git.dimitrikvirik.feedapi.utils.TimeFormat;
 import git.dimitrikvirik.generated.feedapi.model.CommentRequest;
 import git.dimitrikvirik.generated.feedapi.model.CommentResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,13 +43,21 @@ public class CommentFacade {
 					FeedPost feedPost = tuple.getT1().getT2();
 					CommentRequest comment = tuple.getT1().getT1();
 					String commentId = UUID.randomUUID().toString();
+					//TODO check
 					Mono<SenderResult<Void>> senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
 							.id(UUID.randomUUID().toString())
 							.seen(false)
+							.createdAt(ZonedDateTime.now())
+							.senderUser(feedUser)
+							.receiverUserId(feedPost.getUserId())
 							.sourceResourceId(commentId)
 							.type(NotificationType.COMMENT)
 							.build()
-					);
+					).doOnError(result -> {
+						System.out.println("Error sending message: " + result);
+					}).doOnSuccess(result -> {
+						System.out.println("Message sent: " + result);
+					});
 
 
 					FeedComment feedComment = FeedComment

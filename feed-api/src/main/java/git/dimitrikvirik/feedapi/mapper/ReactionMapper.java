@@ -16,6 +16,7 @@ public class ReactionMapper {
 		reactionResponse.setId(reaction.getId());
 		reactionResponse.setCreatedAt(reaction.getCreatedAt().format(TimeFormat.zoneDateTime));
 		reactionResponse.setUpdatedAt(reaction.getUpdatedAt().format(TimeFormat.zoneDateTime));
+		reactionResponse.setUser(UserMapper.fromUser(reaction.getFeedUser()));
 		return reactionResponse;
 	}
 

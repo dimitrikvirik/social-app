@@ -11,6 +11,7 @@ public class CommentMapper {
 	public static CommentResponse toCommentResponse(FeedComment comment) {
 		return CommentResponse.builder()
 				.id(comment.getId())
+				.user(UserMapper.fromUser(comment.getFeedUser()))
 				.content(comment.getContent())
 				.postId(comment.getPostId())
 				.createdAt(comment.getCreatedAt().format(TimeFormat.zoneDateTime))

@@ -1,14 +1,15 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.ReactionMapper;
-import git.dimitrikvirik.feedapi.model.domain.FeedNotification;
+import git.dimitrikvirik.feedapi.model.kafka.FeedNotification;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
+import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.model.enums.NotificationType;
 import git.dimitrikvirik.feedapi.model.enums.ReactionType;
 import git.dimitrikvirik.feedapi.service.PostService;
 import git.dimitrikvirik.feedapi.service.ReactionService;
-import git.dimitrikvirik.feedapi.utils.UserHelper;
+import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.ReactionRequest;
 import git.dimitrikvirik.generated.feedapi.model.ReactionResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ReactionFacade {
 
 	private final PostService postService;
 
+	private final UserService userService;
+
 	private final ReactiveKafkaProducerTemplate<String, FeedNotification> kafkaTemplate; //TODO
 
 
@@ -40,30 +43,35 @@ public class ReactionFacade {
 
 
 		return reactionRequest
-				.zipWith(UserHelper.currentUserId())
+				.zipWith(userService.currentUser())
 				.zipWhen(tuple2 -> {
 					ReactionRequest request = tuple2.getT1();
-					String userId = tuple2.getT2();
+					FeedUser user = tuple2.getT2();
 
-					return reactionService.findByPost(request.getPostId(), userId).zipWith(
+					return reactionService.findByPost(request.getPostId(), user.getUserId()).zipWith(
 							postService.getById(request.getPostId())
 					);
 				})
 				.flatMap(tuple2 -> {
 					String reactionId = UUID.randomUUID().toString();
-
 					ReactionRequest request = tuple2.getT1().getT1();
-					String userId = tuple2.getT1().getT2();
+					FeedUser feedUser = tuple2.getT1().getT2();
 					Boolean hasReaction = tuple2.getT2().getT1();
 					FeedPost feedPost = tuple2.getT2().getT2();
-
-					Mono<SenderResult<Void>> senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
-							.id(UUID.randomUUID().toString())
-							.seen(false)
-							.sourceResourceId(reactionId)
-							.type(NotificationType.REACTION)
-							.build()
-					);
+					Mono<SenderResult<Void>> senderResultMono;
+					if (!feedPost.getFeedUser().getUserId().equals(feedUser.getId()))
+						senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
+								.id(UUID.randomUUID().toString())
+								.seen(false)
+								.sourceResourceId(reactionId)
+								.createdAt(ZonedDateTime.now())
+								.senderUser(feedUser)
+								.receiverUserId(feedPost.getUserId())
+								.type(NotificationType.REACTION)
+								.build()
+						);
+					else
+						senderResultMono = Mono.empty();
 
 					if (hasReaction) {
 						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has reaction"));
@@ -80,7 +88,7 @@ public class ReactionFacade {
 							.createdAt(ZonedDateTime.now())
 							.updatedAt(ZonedDateTime.now())
 							.postId(request.getPostId())
-							.userId(userId)
+							.feedUser(feedUser)
 							.reactionType(ReactionType.valueOf(request.getType().name()))
 							.build();
 					return senderResultMono.then(postService.save(feedPost)).then(reactionService.save(feedReaction));

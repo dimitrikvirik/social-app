@@ -6,10 +6,11 @@ spring:
       uri: ${CONFIG_SERVER}
   elasticsearch:
     uris: http://10.241.76.20:9200 # local Profile
-
-
   kafka:
     bootstrap-servers: 10.241.76.20:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: feed-api
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -17,6 +18,7 @@ spring:
       properties:
         spring.json.use.type.headers: false
         spring.json.value.default.type: git.dimitrikvirik.feedapi.model.kafka.UserDTO
+
     properties:
       spring.json.trusted.packages: "*"
 eureka:

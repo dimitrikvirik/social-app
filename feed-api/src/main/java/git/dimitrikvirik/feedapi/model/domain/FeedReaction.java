@@ -21,7 +21,7 @@ public class FeedReaction implements UserResource {
 	private String id;
 
 
-	private String userId;
+	private FeedUser feedUser;
 
 
 	private String postId;
@@ -31,6 +31,11 @@ public class FeedReaction implements UserResource {
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private ZonedDateTime createdAt;
 
-	@Field(type = FieldType.Date,  format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private ZonedDateTime updatedAt;
+
+	@Override
+	public String getUserId() {
+		return feedUser.getId();
+	}
 }

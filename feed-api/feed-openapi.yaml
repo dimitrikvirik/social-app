@@ -953,61 +953,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /notification:
-    get:
-      tags:
-        - Notification
-      summary: Get notifications
-      description: Get notifications
-      operationId: getNotifications
-      parameters:
-        - name: page
-          in: query
-          description: page number
-          required: true
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          description: size of page
-          required: true
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NotificationResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     NotificationResponse:
@@ -1026,7 +971,6 @@ components:
           type: boolean
         createdAt:
           type: string
-          format: date-time
     CommentRequest:
       type: object
       properties:
@@ -1066,6 +1010,8 @@ components:
           type: string
         postId:
           type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
         type:
           type: string
           enum:

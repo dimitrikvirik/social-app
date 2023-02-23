@@ -18,25 +18,25 @@ public class UserFacade {
 
 
 	private final UserService userService;
+
 	private final ReactiveKafkaConsumerTemplate<String, UserDTO> kafkaTemplate;
 
 
 	@PostConstruct
 	public void kafkaSubscribe() {
-		kafkaTemplate.receiveAutoAck().map(record ->
+		kafkaTemplate.receiveAutoAck().flatMap(record ->
 				{
 					UserDTO value = record.value();
-					return FeedUser.builder()
+					FeedUser feedUser = FeedUser.builder()
 							.firstname(value.getFirstName())
 							.lastname(value.getLastName())
 							.photo(value.getProfile())
 							.id(value.getId())
-							.reactionNotificationEnabled(value.getReactionNotificationEnabled())
-							.commentNotificationEnabled(value.getCommentNotificationEnabled())
 							.build();
 
+					return userService.save(feedUser);
 				}
-		).flatMap(userService::save).log().subscribe();
+		).log().subscribe();
 	}
 
 

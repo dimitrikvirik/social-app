@@ -22,9 +22,6 @@ public class FeedUser implements UserResource {
 
 	private String photo;
 
-	private Boolean commentNotificationEnabled;
-
-	private Boolean reactionNotificationEnabled;
 
 	@Override
 	public String getUserId() {
