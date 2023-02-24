@@ -24,7 +24,7 @@ public class SecurityConfig {
 		http.cors().and().csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeHttpRequests()
-				.requestMatchers("/auth/**", "/api-docs", "/**").permitAll()
+				.requestMatchers("/auth/**", "/api-docs", "/nws").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);

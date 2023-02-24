@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: Notification API
+  description: Notification Api
+  version: 1.0.0
+
+paths:
+  /balance:
+    get:
+      summary: Get balance
+      description: Get balance
+      operationId: getBalance
+      tags:
+        - Balance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /balance/refund:
+    post:
+      summary: Refund balance
+      description: Refund balance
+      operationId: refundBalance
+      tags:
+        - Balance
+      requestBody:
+        description: Refund balance request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundBalanceRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /balance/charge:
+    post:
+      summary: Charge balance
+      description: Charge balance
+      operationId: chargeBalance
+      tags:
+        - Balance
+      requestBody:
+        description: Charge balance request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeBalanceRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /balance/test-fill:
+    post:
+      summary: Test fill balance
+      description: Test fill balance
+      operationId: testFillBalance
+      tags:
+        - Balance
+      requestBody:
+        description: Test fill balance request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestFillBalanceRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /transaction/{id}:
+    get:
+      summary: Get transaction
+      description: Get transaction
+      operationId: getTransaction
+      tags:
+        - Transaction
+      parameters:
+        - name: id
+          in: path
+          description: Transaction id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /transaction:
+    get:
+      summary: Get transactions
+      description: Get transactions
+      operationId: getTransactions
+      parameters:
+        - name: size
+          in: query
+          description: Page size
+          required: true
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 0
+      tags:
+        - Transaction
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum:
+            - FILL
+            - CHARGE
+            - REFUND
+        createdAt:
+          type: string
+    RefundBalanceRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+    ChargeBalanceRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum:
+            - POST_BOOST
+        targetResourceId:
+          type: string
+    TestFillBalanceRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+    BalanceResponse:
+      type: object
+      properties:
+        balance:
+          type: number
+          format: double
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        application:
+          type: string
+        methodName:
+          type: string
+        exceptionName:
+          type: string
+        path:
+          type: string
+        status:
+          type: string

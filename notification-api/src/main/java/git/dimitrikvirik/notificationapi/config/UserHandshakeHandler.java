@@ -12,6 +12,9 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 
 	private final String TEST_USER_ID = "123";
 
+
+	//TODO get real user id
+
 	@Override
 	protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
 		return new UserPrincipal(TEST_USER_ID);

@@ -1,7 +1,6 @@
 spring:
   application:
-    name: notification-api
+    name: payment-api
   cloud:
     config:
       uri: ${CONFIG_SERVER}
-

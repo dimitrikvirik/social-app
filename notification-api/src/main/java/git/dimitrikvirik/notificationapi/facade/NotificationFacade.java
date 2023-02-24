@@ -2,6 +2,7 @@ package git.dimitrikvirik.notificationapi.facade;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import git.dimitrikvirik.common.util.UserHelper;
 import git.dimitrikvirik.notification.model.NotificationDTO;
 import git.dimitrikvirik.notificationapi.mapper.NotificationMapper;
 import git.dimitrikvirik.notificationapi.model.domain.Notification;
@@ -10,7 +11,6 @@ import git.dimitrikvirik.notificationapi.model.enums.NotificationType;
 import git.dimitrikvirik.notificationapi.model.kafka.NotificationKafka;
 import git.dimitrikvirik.notificationapi.service.NotificationService;
 import git.dimitrikvirik.notificationapi.service.NotificationSettingService;
-import git.dimitrikvirik.notificationapi.util.UserHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
