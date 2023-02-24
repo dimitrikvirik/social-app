@@ -1,5 +1,7 @@
 package git.dimitrikvirik.paymentapi.facade;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import git.dimitrikvirik.common.util.UserHelper;
 import git.dimitrikvirik.payment.model.*;
 import git.dimitrikvirik.paymentapi.mapper.BalanceMapper;
@@ -7,11 +9,14 @@ import git.dimitrikvirik.paymentapi.mapper.TransactionMapper;
 import git.dimitrikvirik.paymentapi.model.domain.Balance;
 import git.dimitrikvirik.paymentapi.model.domain.PaymentTransaction;
 import git.dimitrikvirik.paymentapi.model.enums.TransactionType;
+import git.dimitrikvirik.paymentapi.model.kafka.UserKafka;
 import git.dimitrikvirik.paymentapi.service.BalanceService;
 import git.dimitrikvirik.paymentapi.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,6 +32,16 @@ public class BalanceFacade {
 	private final BalanceService balanceService;
 
 	private final PaymentTransactionService transactionService;
+
+	private final ObjectMapper objectMapper;
+
+	@KafkaListener(topics = "user", groupId = "payment-api")
+	public void kafkaListener(ConsumerRecord<String, String> record) throws JsonProcessingException {
+		UserKafka userKafka = objectMapper.readValue(record.value(), UserKafka.class);
+		String userKafkaId = userKafka.getId();
+		balanceService.saveIfNotExists(userKafkaId);
+	}
+
 
 	public BalanceResponse getBalance() {
 		Balance balance = balanceService.findByUserId(UserHelper.currentUserId());

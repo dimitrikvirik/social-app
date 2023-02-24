@@ -14,4 +14,6 @@ public interface BalanceRepository extends JpaRepository<Balance, String> {
 	@QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value ="10000")})
 	Optional<Balance> findByUserId(String userId);
 
+	Boolean existsByUserId(String userId);
+
 }

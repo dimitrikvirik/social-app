@@ -30,8 +30,7 @@ public class Balance {
 	private List<PaymentTransaction> transactions;
 
 	@CreationTimestamp
-	private LocalDateTime createdAt = LocalDateTime.now();
-
+	private LocalDateTime createdAt;
 
 
 }

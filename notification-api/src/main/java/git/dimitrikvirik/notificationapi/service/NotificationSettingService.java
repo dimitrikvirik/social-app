@@ -1,6 +1,5 @@
 package git.dimitrikvirik.notificationapi.service;
 
-import git.dimitrikvirik.notificationapi.model.domain.Notification;
 import git.dimitrikvirik.notificationapi.model.domain.NotificationSetting;
 import git.dimitrikvirik.notificationapi.repository.NotificationSettingRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +23,8 @@ public class NotificationSettingService {
 		);
 	}
 
-	public NotificationSetting saveIfNotExist(NotificationSetting notificationSetting) {
-		return repository.findById(notificationSetting.getUserId()).orElseGet(() -> repository.save(notificationSetting));
+	public void saveIfNotExist(NotificationSetting notificationSetting) {
+		repository.findById(notificationSetting.getUserId()).orElseGet(() -> repository.save(notificationSetting));
 	}
 
 }
