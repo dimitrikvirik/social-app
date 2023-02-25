@@ -27,8 +27,8 @@ public class PaymentTransactionService {
 		);
 	}
 
-	public List<PaymentTransaction> findAll(int size, int page) {
-		return repository.findAll(PageRequest.of(page, size)).getContent();
+	public List<PaymentTransaction> findAll(int size, int page, String userId) {
+		return repository.findAllByBalanceUserId(userId, PageRequest.of(page, size)).getContent();
 	}
 
 }

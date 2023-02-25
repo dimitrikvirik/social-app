@@ -42,8 +42,10 @@ public class FeedPost implements UserResource {
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private ZonedDateTime createdAt;
 
-	@Field(type = FieldType.Date,  format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private ZonedDateTime updatedAt;
+
+	private Double paymentBoost;
 
 	@Override
 	public String getUserId() {

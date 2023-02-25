@@ -2,7 +2,7 @@ package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.CommentMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedComment;
-import git.dimitrikvirik.feedapi.model.kafka.FeedNotification;
+import git.dimitrikvirik.feedapi.model.kafka.NotificationKafka;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.model.enums.NotificationType;
@@ -33,7 +33,7 @@ public class CommentFacade {
 
 	private final UserService userService;
 
-	private final ReactiveKafkaProducerTemplate<String, FeedNotification> kafkaTemplate; //TODO
+	private final ReactiveKafkaProducerTemplate<String, NotificationKafka> kafkaTemplate;
 
 	public Mono<ResponseEntity<CommentResponse>> createComment(Mono<CommentRequest> commentRequest, ServerWebExchange exchange) {
 		return commentRequest.zipWhen(comment -> postService.getById(comment.getPostId()))
@@ -43,22 +43,21 @@ public class CommentFacade {
 					FeedPost feedPost = tuple.getT1().getT2();
 					CommentRequest comment = tuple.getT1().getT1();
 					String commentId = UUID.randomUUID().toString();
-					//TODO check
-					Mono<SenderResult<Void>> senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
-							.id(UUID.randomUUID().toString())
-							.seen(false)
-							.createdAt(ZonedDateTime.now())
-							.senderUser(feedUser)
-							.receiverUserId(feedPost.getUserId())
-							.sourceResourceId(commentId)
-							.type(NotificationType.COMMENT)
-							.build()
-					).doOnError(result -> {
-						System.out.println("Error sending message: " + result);
-					}).doOnSuccess(result -> {
-						System.out.println("Message sent: " + result);
-					});
-
+					Mono<SenderResult<Void>> senderResultMono;
+					if (!feedPost.getFeedUser().getUserId().equals(feedUser.getUserId())) {
+						senderResultMono = kafkaTemplate.send("notification", feedPost.getUserId(), NotificationKafka.builder()
+								.id(UUID.randomUUID().toString())
+								.seen(false)
+								.createdAt(ZonedDateTime.now())
+								.senderUserId(feedUser.getUserId())
+								.receiverUserId(feedPost.getUserId())
+								.sourceResourceId(commentId)
+								.type(NotificationType.COMMENT)
+								.build()
+						);
+					} else {
+						senderResultMono = Mono.empty();
+					}
 
 					FeedComment feedComment = FeedComment
 							.builder()

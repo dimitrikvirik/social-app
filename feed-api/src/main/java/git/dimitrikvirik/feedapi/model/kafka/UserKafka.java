@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @ToString
-public class UserDTO {
+public class UserKafka {
 
 	private String id;
 

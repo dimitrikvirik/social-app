@@ -1,7 +1,7 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import git.dimitrikvirik.feedapi.mapper.ReactionMapper;
-import git.dimitrikvirik.feedapi.model.kafka.FeedNotification;
+import git.dimitrikvirik.feedapi.model.kafka.NotificationKafka;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
@@ -36,7 +36,7 @@ public class ReactionFacade {
 
 	private final UserService userService;
 
-	private final ReactiveKafkaProducerTemplate<String, FeedNotification> kafkaTemplate; //TODO
+	private final ReactiveKafkaProducerTemplate<String, NotificationKafka> kafkaTemplate;
 
 
 	public Mono<ResponseEntity<ReactionResponse>> createReaction(Mono<ReactionRequest> reactionRequest, ServerWebExchange exchange) {
@@ -60,12 +60,12 @@ public class ReactionFacade {
 					FeedPost feedPost = tuple2.getT2().getT2();
 					Mono<SenderResult<Void>> senderResultMono;
 					if (!feedPost.getFeedUser().getUserId().equals(feedUser.getId()))
-						senderResultMono = kafkaTemplate.send("feed-notification", feedPost.getUserId(), FeedNotification.builder()
+						senderResultMono = kafkaTemplate.send("notification", feedPost.getUserId(), NotificationKafka.builder()
 								.id(UUID.randomUUID().toString())
 								.seen(false)
 								.sourceResourceId(reactionId)
 								.createdAt(ZonedDateTime.now())
-								.senderUser(feedUser)
+								.senderUserId(feedUser.getUserId())
 								.receiverUserId(feedPost.getUserId())
 								.type(NotificationType.REACTION)
 								.build()

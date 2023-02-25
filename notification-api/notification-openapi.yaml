@@ -107,17 +107,19 @@ paths:
         - name: page
           in: query
           description: Page number
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
+            default: 0
         - name: size
           in: query
           description: Page size
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
+            default: 10
       responses:
         '200':
           description: OK

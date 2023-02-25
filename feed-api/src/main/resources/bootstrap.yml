@@ -1,4 +1,5 @@
 spring:
+
   application:
     name: feed-api
   cloud:
@@ -16,9 +17,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.use.type.headers: false
-        spring.json.value.default.type: git.dimitrikvirik.feedapi.model.kafka.UserDTO
-
+          spring.json.use.type.headers: false
     properties:
       spring.json.trusted.packages: "*"
 eureka:

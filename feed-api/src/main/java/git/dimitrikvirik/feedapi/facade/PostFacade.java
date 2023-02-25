@@ -5,12 +5,19 @@ import git.dimitrikvirik.feedapi.mapper.PostMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.model.domain.FeedTopic;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
+import git.dimitrikvirik.feedapi.model.enums.PaymentStatus;
+import git.dimitrikvirik.feedapi.model.kafka.PaymentKafka;
 import git.dimitrikvirik.feedapi.service.*;
 import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,11 +40,48 @@ public class PostFacade {
 
 	private final CommentService commentService;
 
+	private final ReactiveKafkaConsumerTemplate<String, PaymentKafka> consumerTemplate;
+
+	private final ReactiveKafkaProducerTemplate<String, PaymentKafka> producerTemplate;
+
+
+	@PostConstruct
+	public void registerConsumer() {
+		consumerTemplate.receiveAutoAck()
+				.filter(record -> record.value().getStatus().equals(PaymentStatus.PENDING))
+				.flatMap(record -> {
+					PaymentKafka payment = record.value();
+					String postId = payment.getResourceId();
+					return postService.getById(postId)
+							.flatMap(post -> {
+								post.setPaymentBoost(post.getPaymentBoost() + 1);
+								payment.setStatus(PaymentStatus.SUCCESS);
+								return postService.save(post).then(producerTemplate.send("payment", record.value()));
+							})
+							.onErrorResume(throwable -> {
+								payment.setStatus(PaymentStatus.FAILED);
+								if (throwable instanceof ResponseStatusException) {
+									payment.setReason(((ResponseStatusException) throwable).getReason());
+								} else {
+									payment.setReason("Server error");
+								}
+
+								return producerTemplate.send("payment", record.value()).then(Mono.empty());
+							})
+							.log();
+				})
+				.log()
+				.subscribe();
+	}
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
 		return postRequest
-				.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList())
+				.zipWhen(post -> {
+					if (post.getTopics().isEmpty())
+						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics cannot be empty"));
+					return topicService.findAllByIds(post.getTopics()).collectList();
+				})
 				.zipWith(userService.currentUser())
 				.map(tuple -> {
 					FeedUser feedUser = tuple.getT2();
