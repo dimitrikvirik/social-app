@@ -81,18 +81,18 @@ public class NotificationFacade {
 		return ResponseEntity.ok(NotificationMapper.map(notificationService.save(notification)));
 	}
 
-	@Scheduled(fixedDelay = 1000)
-	public void test() {
-		Notification notification = Notification.builder()
-				.receiverUserId("123")
-				.senderUserId("2")
-				.type(NotificationType.COMMENT)
-				.sourceResourceId("3")
-				.createdAt(LocalDateTime.now())
-				.seen(false)
-				.build();
-		simpMessagingTemplate.convertAndSendToUser("d1a258ed-7d81-40f3-ba4a-53777f584ef6","/topic/notification", NotificationMapper.map(notification));
-	}
+//	@Scheduled(fixedDelay = 1000)
+//	public void test() {
+//		Notification notification = Notification.builder()
+//				.receiverUserId("123")
+//				.senderUserId("2")
+//				.type(NotificationType.COMMENT)
+//				.sourceResourceId("3")
+//				.createdAt(LocalDateTime.now())
+//				.seen(false)
+//				.build();
+//		simpMessagingTemplate.convertAndSendToUser("d1a258ed-7d81-40f3-ba4a-53777f584ef6","/topic/notification", NotificationMapper.map(notification));
+//	}
 
 
 }

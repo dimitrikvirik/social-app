@@ -1,6 +1,7 @@
 package git.dimitrikvirik.paymentapi.model.domain;
 
 import git.dimitrikvirik.paymentapi.model.enums.TransactionType;
+import git.dimitrikvirik.paymentapi.model.kafka.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,6 +31,10 @@ public class PaymentTransaction {
 	@JoinColumn(name = "balance_id")
 	@ManyToOne
 	private Balance balance;
+
+	@Enumerated
+	@Column(name = "status")
+	private PaymentStatus status;
 
 	@CreationTimestamp
 	private LocalDateTime createdAt = LocalDateTime.now();

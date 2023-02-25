@@ -1,5 +1,6 @@
 package git.dimitrikvirik.paymentapi.facade;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import git.dimitrikvirik.common.util.UserHelper;
 import git.dimitrikvirik.payment.model.TransactionResponse;
 import git.dimitrikvirik.paymentapi.mapper.TransactionMapper;
@@ -7,6 +8,7 @@ import git.dimitrikvirik.paymentapi.model.domain.PaymentTransaction;
 import git.dimitrikvirik.paymentapi.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,6 +19,8 @@ import java.util.List;
 public class TransactionFacade {
 
 	private final PaymentTransactionService service;
+
+
 
 	public TransactionResponse getTransaction(String id) {
 		PaymentTransaction transaction = service.findById(id);
