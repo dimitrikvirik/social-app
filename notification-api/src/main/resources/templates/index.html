@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<form id="stomp-form">
+    <label for="token">
+        Token
+    </label>
+    <input type="text" name="token" id="token">
+    <br>
+    <button type="submit" id="connect-button">Connect</button>
+</form>
+<button id="clearbtn" onclick="clearMessages()">clear</button>
+<div id="messages">
+</div>
+
+<body>
+
+
+<script>
+    function clearMessages() {
+        document.getElementById("messages").innerHTML = "";
+    }
+
+    document.getElementById("stomp-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        let token = document.getElementById("token").value;
+
+
+        const socket = new SockJS("/nws", null, {transports: ['websocket']});
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({
+                'Authorization': 'Bearer ' + token
+            }
+            , function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe("/user/topic/notification", function (message) {
+                    console.log(message);
+                    let messages = document.getElementById("messages");
+                    let messageElement = document.createElement("div");
+                    messageElement.innerHTML = message.body;
+                    messages.appendChild(messageElement);
+                });
+            });
+
+    })
+    ;
+
+
+</script>
+</body>
+</html>

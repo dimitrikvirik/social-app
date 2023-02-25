@@ -5,6 +5,7 @@ import git.dimitrikvirik.notificationapi.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class NotificationService {
 
 	private final NotificationRepository repository;
+
 
 
 	public Notification save(Notification notification) {

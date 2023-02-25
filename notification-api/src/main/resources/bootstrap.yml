@@ -1,7 +1,9 @@
 spring:
+  devtools:
+    livereload:
+      enabled: true
   application:
     name: notification-api
   cloud:
     config:
       uri: ${CONFIG_SERVER}
-

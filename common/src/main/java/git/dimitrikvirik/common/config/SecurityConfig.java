@@ -21,10 +21,13 @@ public class SecurityConfig {
 		var jwtAuthenticationConverter = new JwtAuthenticationConverter();
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
 
+
+
+
 		http.cors().and().csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeHttpRequests()
-				.requestMatchers("/auth/**", "/api-docs", "/nws").permitAll()
+				.requestMatchers("/auth/**", "/api-docs", "/nws", "/nws/**", "/test").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);

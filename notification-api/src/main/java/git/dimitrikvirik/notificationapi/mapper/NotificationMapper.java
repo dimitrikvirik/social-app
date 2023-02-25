@@ -9,6 +9,7 @@ public class NotificationMapper {
 
 	public static NotificationDTO map(Notification notification) {
 		return NotificationDTO.builder()
+				.id(notification.getId())
 				.createdAt(notification.getCreatedAt().toString())
 				.seen(notification.getSeen())
 				.senderUserId(notification.getSenderUserId())

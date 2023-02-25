@@ -11,6 +11,7 @@ import git.dimitrikvirik.notificationapi.model.enums.NotificationType;
 import git.dimitrikvirik.notificationapi.model.kafka.NotificationKafka;
 import git.dimitrikvirik.notificationapi.service.NotificationService;
 import git.dimitrikvirik.notificationapi.service.NotificationSettingService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -53,12 +55,13 @@ public class NotificationFacade {
 				.id(UUID.randomUUID().toString())
 				.senderUserId(value.getSenderUserId())
 				.receiverUserId(value.getReceiverUserId())
+				.createdAt(LocalDateTime.now())
 				.sourceResourceId(value.getSourceResourceId())
 				.type(type)
 				.seen(false)
 				.createdAt(LocalDateTime.now())
 				.build();
-		simpMessagingTemplate.convertAndSendToUser(value.getReceiverUserId(),"topic/notification", NotificationMapper.map(notification));
+		simpMessagingTemplate.convertAndSendToUser(value.getReceiverUserId(), "topic/notification", NotificationMapper.map(notification));
 		notificationService.save(notification);
 	}
 
@@ -76,6 +79,19 @@ public class NotificationFacade {
 		notification.setSeen(true);
 
 		return ResponseEntity.ok(NotificationMapper.map(notificationService.save(notification)));
+	}
+
+	@Scheduled(fixedDelay = 1000)
+	public void test() {
+		Notification notification = Notification.builder()
+				.receiverUserId("123")
+				.senderUserId("2")
+				.type(NotificationType.COMMENT)
+				.sourceResourceId("3")
+				.createdAt(LocalDateTime.now())
+				.seen(false)
+				.build();
+		simpMessagingTemplate.convertAndSendToUser("d1a258ed-7d81-40f3-ba4a-53777f584ef6","/topic/notification", NotificationMapper.map(notification));
 	}
 
 
