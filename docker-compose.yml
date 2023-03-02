@@ -169,6 +169,17 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - gateway
-
+  feed:
+    restart: always
+    image: feed-api:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8085:8085
+    environment:
+      - CONFIG_SERVER=http://config:8081
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - gateway
 volumes:
   minio_storage: { }
