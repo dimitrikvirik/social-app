@@ -19,6 +19,7 @@ public class SpringDocConfig {
 						.title("Feed API")
 						.version("1.0.0")
 						.description("User API"))
+				.servers(List.of(new io.swagger.v3.oas.models.servers.Server().url("/feed/")))
 				.components(
 						new Components()
 								.addSecuritySchemes("bearerAuth",
