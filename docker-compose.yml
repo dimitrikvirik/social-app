@@ -115,6 +115,7 @@ services:
     ports:
       - 5601:5601
   zookeeper:
+    restart: always
     image: wurstmeister/zookeeper
     container_name: zookeeper_1
     networks:
@@ -122,6 +123,7 @@ services:
     ports:
       - "2181:2181"
   kafka:
+    restart: always
     image: wurstmeister/kafka
     container_name: kafka_1
     networks:
@@ -132,6 +134,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 10.241.76.20
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
   user:
+    restart: always
     image: user-api:1.0.0
     networks:
       - social-net

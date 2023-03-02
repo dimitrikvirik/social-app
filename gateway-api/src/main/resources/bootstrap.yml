@@ -2,54 +2,5 @@ spring:
   application:
     name: gateway-api
   cloud:
-    gateway:
-      routes:
-        - id: user-api
-          uri: lb://user-api
-          predicates:
-            - Path=/user/**
-          filters:
-            - RewritePath=/user/(?<path>.*), /$\{path}
-        - id: feed-api
-          uri: lb://feed-api
-          predicates:
-            - Path=/feed/**
-          filters:
-            - StripPrefix=1
-        - id: payment-api
-          uri: lb://payment-api
-          predicates:
-            - Path=/payment/**
-          filters:
-            - StripPrefix=1
-        - id: notification-api
-          uri: lb://notification-api
-          predicates:
-            - Path=/notification/**
-          filters:
-            - StripPrefix=1
-eureka:
-  client:
-    fetchRegistry: true
-    registerWithEureka: true
-    serviceUrl:
-      defaultZone: ${EUREKA_HOST}
-  instance:
-    preferIpAddress: true
-springdoc:
-  swagger-ui:
-    urls:
-      - name: user-api
-        url: /user/api-docs
-      - name: feed-api
-        url: /feed/api-docs
-      - name: payment-api
-        url: /payment/api-docs
-      - name: notification-api
-        url: /notification/api-docs
-    path: /swagger-ui
-    enabled: true
-
-server:
-  forward-headers-strategy: framework
-EUREKA_HOST: http://10.241.76.20:8761/eureka
+    config:
+      uri:  ${CONFIG_SERVER}
