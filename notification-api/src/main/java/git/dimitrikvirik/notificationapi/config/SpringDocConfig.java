@@ -19,6 +19,7 @@ public class SpringDocConfig {
 						.title("Notification API")
 						.version("1.0.0")
 						.description("Notification API"))
+				.servers(List.of(new io.swagger.v3.oas.models.servers.Server().url("/notification/")))
 				.components(
 						new Components()
 								.addSecuritySchemes("bearerAuth",

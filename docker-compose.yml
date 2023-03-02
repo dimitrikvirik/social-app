@@ -157,5 +157,18 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - gateway
+  notification:
+    restart: always
+    image: notification-api:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8084:8084
+    environment:
+      - CONFIG_SERVER=http://config:8081
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - gateway
+
 volumes:
   minio_storage: { }
