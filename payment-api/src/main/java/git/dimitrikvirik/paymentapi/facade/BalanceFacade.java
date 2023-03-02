@@ -78,11 +78,11 @@ public class BalanceFacade {
 
 	public TransactionResponse chargeBalance(ChargeBalanceRequest chargeBalanceRequest) {
 		Balance balance = balanceService.findByUserId(UserHelper.currentUserId());
-		if (balance.getAmount() < chargeBalanceRequest.getAmount()) {
+		if (balance.getAmount() < 5) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough money");
 		}
-		PaymentTransaction paymentTransaction = createTransaction(chargeBalanceRequest.getAmount(), balance, TransactionType.CHARGE);
-		balance.setAmount(balance.getAmount() - chargeBalanceRequest.getAmount());
+		PaymentTransaction paymentTransaction = createTransaction(5.0, balance, TransactionType.CHARGE);
+		balance.setAmount(balance.getAmount() - 5);
 		if (chargeBalanceRequest.getType().equals(ChargeBalanceRequest.TypeEnum.POST_BOOST)) {
 			PaymentKafka payment = new PaymentKafka();
 			payment.setTransactionId(paymentTransaction.getId());

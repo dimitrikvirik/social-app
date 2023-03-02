@@ -1,6 +1,5 @@
 plugins {
     id "org.openapi.generator" version "6.3.0"
-
 }
 
 dependencies {
@@ -46,6 +45,7 @@ openApiGenerate {
     inputSpec = "$projectDir/user-openapi.yaml"
     outputDir = "$buildDir/generated-sources/openapi"
     templateDir = "$projectDir/templates"
+
     configOptions = [
             apiPackage     : "git.dimitrikvirik.userapi.api",
             modelPackage   : "git.dimitrikvirik.userapi.model",

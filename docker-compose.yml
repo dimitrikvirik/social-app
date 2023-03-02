@@ -7,6 +7,7 @@ networks:
     external: true
 services:
   postgres:
+    restart: always
     image: postgres:latest
     networks:
       - social-net
@@ -17,6 +18,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
   keycloak:
+    restart: always
     image: jboss/keycloak:latest
     networks:
       - social-net
@@ -31,12 +33,14 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
   redis:
+    restart: always
     image: redis:latest
     networks:
       - social-net
     ports:
       - 6379:6379
   config:
+    restart: always
     image: config-api:1.0.0
     networks:
       - social-net
@@ -49,6 +53,7 @@ services:
     secrets:
       - mysecrets
   eureka:
+    restart: always
     image: eureka-api:1.0.0
     networks:
       - social-net
@@ -60,6 +65,7 @@ services:
     depends_on:
       - config
   gateway:
+    restart: always
     image: gateway-api:1.0.0
     networks:
       - social-net
@@ -71,6 +77,7 @@ services:
     depends_on:
       - eureka
   minio:
+    restart: always
     image: minio/minio:latest
     ports:
       - 9000:9000
@@ -84,6 +91,7 @@ services:
     networks:
       - social-net
   elasticsearch:
+    restart: always
     image: elasticsearch:8.5.3
     environment:
       - discovery.type=single-node
@@ -95,6 +103,7 @@ services:
     networks:
       - social-net
   kibana:
+    restart: always
     container_name: kb-container
     image: kibana:8.5.3
     environment:

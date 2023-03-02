@@ -25,10 +25,10 @@ public class FeedPost implements UserResource {
 
 	private FeedUser feedUser;
 
-	@CompletionField
+
 	private String title;
 
-	@CompletionField
+
 	private String content;
 
 	private List<FeedTopic> topics;

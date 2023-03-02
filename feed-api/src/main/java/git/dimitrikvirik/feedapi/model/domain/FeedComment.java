@@ -25,8 +25,6 @@ public class FeedComment implements UserResource {
 
 	private FeedUser feedUser;
 
-	private String title;
-
 	private String content;
 
 

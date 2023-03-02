@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "_class": {
+      "type": "keyword",
+      "index": false,
+      "doc_values": false
+    },
+    "createdAt": {
+      "type": "date",
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+    },
+    "updatedAt": {
+      "type": "date",
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+    }
+  }
+}

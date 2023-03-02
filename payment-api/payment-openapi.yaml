@@ -269,9 +269,6 @@ components:
     ChargeBalanceRequest:
       type: object
       properties:
-        amount:
-          type: number
-          format: double
         type:
           type: string
           enum:
