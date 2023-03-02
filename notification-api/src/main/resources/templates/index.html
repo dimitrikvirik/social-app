@@ -31,7 +31,7 @@
         let token = document.getElementById("token").value;
 
 
-        const socket = new SockJS("/nws", null, {transports: ['websocket']});
+        const socket = new SockJS("http://localhost:8093/nws", null, {transports: ['websocket']});
         const stompClient = Stomp.over(socket);
         stompClient.connect({
                 'Authorization': 'Bearer ' + token

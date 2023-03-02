@@ -22,9 +22,7 @@ public class SecurityConfig {
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
 
 
-
-
-		http.cors().and().csrf().disable()
+		http.cors().disable().csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeHttpRequests()
 				.requestMatchers("/auth/**", "/api-docs", "/nws", "/nws/**", "/test", "/srb").permitAll()
@@ -36,14 +34,20 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedMethods("*");
-			}
-		};
-	}
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//
+//				registry.addMapping("/**")
+//						.allowedOrigins("*")
+//						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//						.allowedHeaders("Origin", "Accept", "Content-Type", "Authorization")
+//						.allowCredentials(true)
+//						.maxAge(3600);
+//
+//			}
+//		};
+//	}
 }
