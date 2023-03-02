@@ -145,5 +145,17 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - gateway
+  payment:
+    restart: always
+    image: payment-api:1.0.0
+    networks:
+      - social-net
+    ports:
+      - 8083:8083
+    environment:
+      - CONFIG_SERVER=http://config:8081
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - gateway
 volumes:
   minio_storage: { }
