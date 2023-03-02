@@ -7,7 +7,8 @@ import reactor.core.publisher.Mono;
 public interface ReactionRepository extends ReactiveElasticsearchRepository<FeedReaction, String> {
 
 
-	Mono<Boolean> existsByUserIdAndPostId(String userId, String postId);
+	Mono<Boolean> existsByFeedUserIdAndPostId(String userId, String postId);
+
 
 
 	Mono<Void> deleteAllByPostId(String postId);

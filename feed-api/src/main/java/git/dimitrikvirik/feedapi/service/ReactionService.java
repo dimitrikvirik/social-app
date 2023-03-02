@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import git.dimitrikvirik.feedapi.model.domain.FeedReaction;
 import git.dimitrikvirik.feedapi.repository.ReactionRepository;
 import git.dimitrikvirik.feedapi.utils.ElasticsearchBuilder;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class ReactionService extends AbstractUserService<FeedReaction, ReactionR
 
 
 	public Mono<Boolean> findByPost(String postId, String userId) {
-		return repository.existsByUserIdAndPostId(userId, postId);
+		return repository.existsByFeedUserIdAndPostId(userId, postId);
 	}
 
 	public Mono<Void> deleteAllByPostId(String postId) {

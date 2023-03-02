@@ -24,3 +24,5 @@ eureka:
   instance:
     ip-address: 10.241.132.203 # local Profile
     prefer-ip-address: true
+feed:
+  paymentBoostingCoef: 100

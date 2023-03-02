@@ -12,6 +12,7 @@ import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
@@ -43,6 +44,7 @@ public class PostFacade {
 	private final ReactiveKafkaConsumerTemplate<String, PaymentKafka> consumerTemplate;
 
 	private final ReactiveKafkaProducerTemplate<String, PaymentKafka> producerTemplate;
+
 
 
 	@PostConstruct

@@ -13,6 +13,7 @@ import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.ReactionRequest;
 import git.dimitrikvirik.generated.feedapi.model.ReactionResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mapping.context.InvalidPersistentPropertyPath;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
@@ -48,7 +49,8 @@ public class ReactionFacade {
 					ReactionRequest request = tuple2.getT1();
 					FeedUser user = tuple2.getT2();
 
-					return reactionService.findByPost(request.getPostId(), user.getUserId()).zipWith(
+					return reactionService.findByPost(request.getPostId(), user.getUserId())
+							.zipWith(
 							postService.getById(request.getPostId())
 					);
 				})
@@ -73,7 +75,7 @@ public class ReactionFacade {
 					else
 						senderResultMono = Mono.empty();
 
-					if (hasReaction) {
+					if (Boolean.TRUE.equals(hasReaction)) {
 						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has reaction"));
 					}
 					if (request.getType().equals(ReactionRequest.TypeEnum.LIKE)) {
