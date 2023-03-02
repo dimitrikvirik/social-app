@@ -19,6 +19,7 @@ public class SpringDocConfig {
 						.title("Payment API")
 						.version("1.0.0")
 						.description("Payment API"))
+				.servers(List.of(new io.swagger.v3.oas.models.servers.Server().url("/payment/")))
 				.components(
 						new Components()
 								.addSecuritySchemes("bearerAuth",
