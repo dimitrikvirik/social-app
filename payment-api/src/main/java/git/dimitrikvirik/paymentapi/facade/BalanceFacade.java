@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,7 +32,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class BalanceFacade {
 
@@ -61,6 +61,7 @@ public class BalanceFacade {
 		} else if (paymentKafka.getStatus().equals(PaymentStatus.FAILED)) {
 			PaymentTransaction transaction = transactionService.findById(paymentKafka.getTransactionId());
 			transaction.setStatus(PaymentStatus.FAILED);
+			transaction.setReason(paymentKafka.getReason());
 			transactionService.save(transaction);
 			log.info("Transaction {} was failed", transaction.getId());
 			//Return money to balance if failed
@@ -76,6 +77,7 @@ public class BalanceFacade {
 		return BalanceMapper.map(balance);
 	}
 
+	@Transactional
 	public TransactionResponse chargeBalance(ChargeBalanceRequest chargeBalanceRequest) {
 		Balance balance = balanceService.findByUserId(UserHelper.currentUserId());
 		if (balance.getAmount() < 5) {
@@ -102,7 +104,7 @@ public class BalanceFacade {
 
 	}
 
-
+	@Transactional
 	public TransactionResponse refundBalance(RefundBalanceRequest refundBalanceRequest) {
 		Balance balance = balanceService.findByUserId(UserHelper.currentUserId());
 		if (balance.getAmount() < refundBalanceRequest.getAmount()) {
@@ -115,6 +117,7 @@ public class BalanceFacade {
 
 	}
 
+	@Transactional
 	public TransactionResponse testFillBalance(TestFillBalanceRequest testFillBalanceRequest) {
 		Balance balance = balanceService.findByUserId(UserHelper.currentUserId());
 		balance.setAmount(balance.getAmount() + testFillBalanceRequest.getAmount());
@@ -124,13 +127,15 @@ public class BalanceFacade {
 	}
 
 	@NotNull
-	private PaymentTransaction createTransaction(Double amount, Balance balance, TransactionType type) {
+	@Transactional(propagation = Propagation.REQUIRED)
+	public PaymentTransaction createTransaction(Double amount, Balance balance, TransactionType type) {
 		PaymentTransaction paymentTransaction = new PaymentTransaction();
 		paymentTransaction.setAmount(amount);
 		paymentTransaction.setBalance(balance);
 		paymentTransaction.setType(type);
 		paymentTransaction.setId(UUID.randomUUID().toString());
 		paymentTransaction.setCreatedAt(LocalDateTime.now());
+		paymentTransaction.setStatus(PaymentStatus.PENDING);
 		transactionService.save(paymentTransaction);
 
 		return paymentTransaction;

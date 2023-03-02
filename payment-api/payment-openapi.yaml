@@ -252,6 +252,14 @@ components:
         amount:
           type: number
           format: double
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+        reason:
+          type: string
         type:
           type: string
           enum:

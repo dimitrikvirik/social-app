@@ -52,16 +52,14 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 															inline ->
 																	inline.source("""
 																			def score = _score;
-																				if(doc.containsKey('paymentBoost')){
-																				  score *= doc['paymentBoost'] * """ + paymentBoostingCoef +  """
-																				;}
-																			     if(doc.containsKey('like') && doc.containsKey('dislike')){
-																			              def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
-																			              if(disAndLike > 0 ){
-																			                 score *= disAndLike;
-																			              }
-																			            }
-																				score											
+																			 score *=  doc['paymentBoost'].size() == 0 ? 1 : doc['paymentBoost'].value * """ + paymentBoostingCoef + """
+                            ;
+																			         def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
+																			           if(disAndLike > 0 ){
+																			              score *= disAndLike;
+																			           }
+																			         score;
+																			\s									
 																			""")
 													)
 											)))

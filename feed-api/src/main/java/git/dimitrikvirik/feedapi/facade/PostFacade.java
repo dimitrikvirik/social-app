@@ -94,6 +94,7 @@ public class PostFacade {
 							.title(request.getTitle())
 							.like(0)
 							.dislike(0)
+							.paymentBoost(0)
 							.commentCount(0)
 							.content(request.getContent())
 							.topics(topics)

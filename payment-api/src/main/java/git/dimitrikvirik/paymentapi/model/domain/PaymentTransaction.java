@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public class PaymentTransaction {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 
 	@Column(name = "amount")
@@ -32,9 +31,12 @@ public class PaymentTransaction {
 	@ManyToOne
 	private Balance balance;
 
-	@Enumerated
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private PaymentStatus status;
+
+	@Column(name = "reason")
+	private String reason;
 
 	@CreationTimestamp
 	private LocalDateTime createdAt = LocalDateTime.now();
