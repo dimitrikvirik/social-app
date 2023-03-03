@@ -24,7 +24,7 @@ public class NotificationSettingService {
 	}
 
 	public void saveIfNotExist(NotificationSetting notificationSetting) {
-		repository.findById(notificationSetting.getUserId()).orElseGet(() -> repository.save(notificationSetting));
+		repository.findByUserId(notificationSetting.getUserId()).orElseGet(() -> repository.save(notificationSetting));
 	}
 
 }

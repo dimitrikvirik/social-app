@@ -125,7 +125,9 @@ public class PostFacade {
 
 	public Mono<ResponseEntity<PostResponse>> updatePost(String id, Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
-		return postRequest.zipWhen(post -> topicService.findAllByIds(post.getTopics()).collectList()).zipWith(
+		return postRequest.zipWhen(post -> topicService.findAllByIds(post.getTopics()).switchIfEmpty(
+				Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
+		).collectList()).zipWith(
 				postService.getByIdValidated(id)
 		).flatMap(
 				tuple -> {

@@ -41,33 +41,31 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 						searchText,
 						operations
 				)
-				.modifyQuery(builder -> {
-					String createdAt = ZonedDateTime.now().minusDays(2).format(TimeFormat.zoneDateTime);
-					builder.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").from(createdAt))._toQuery());
-					builder.should(FunctionScoreQuery.of(functionScoreBuilder -> functionScoreBuilder
-							.functions(FunctionScore.of(functionBuilder ->
-									functionBuilder.scriptScore(ScriptScoreFunction.of(
-											scriptScore -> scriptScore.script(Script.of(
-													script -> script.inline(
-															inline ->
-																	inline.source("""
-																			def score = _score;
-																			 score *=  doc['paymentBoost'].size() == 0 ? 1 : doc['paymentBoost'].value * """ + paymentBoostingCoef + """
-                            ;
-																			         def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
-																			           if(disAndLike > 0 ){
-																			              score *= disAndLike;
-																			           }
-																			         score;
-																			\s									
-																			""")
-													)
-											)))
-									))
-							))._toQuery()
-					);
-					return builder;
-				}).doSearch();
+				.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").from(ZonedDateTime.now().minusDays(2).format(TimeFormat.zoneDateTime)))._toQuery())
+				.minimumShouldMatch(2)
+				.should(FunctionScoreQuery.of(functionScoreBuilder -> functionScoreBuilder
+						.functions(FunctionScore.of(functionBuilder ->
+								functionBuilder.scriptScore(ScriptScoreFunction.of(
+										scriptScore -> scriptScore.script(Script.of(
+												script -> script.inline(
+														inline ->
+																inline.source("""
+																		def score = _score;
+																		 score +=  doc['paymentBoost'].size() == 0 ? 1 : doc['paymentBoost'].value * """ + paymentBoostingCoef + """
+																		         ;
+																		         def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
+																		           if(disAndLike > 0 ){
+																		              score += disAndLike;
+																		           }
+																		         score;
+																		\s
+																		""")
+												)
+										)))
+								))
+						))._toQuery()
+				)
+				.doSearch();
 	}
 
 

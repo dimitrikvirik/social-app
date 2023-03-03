@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 public class CommentService extends AbstractUserService<FeedComment, CommentRepository> {
 
 	private final ReactiveElasticsearchOperations operations;
+
 	public CommentService(CommentRepository repository, ReactiveElasticsearchOperations operations) {
 		super(repository, "comment");
 		this.operations = operations;
@@ -26,15 +27,11 @@ public class CommentService extends AbstractUserService<FeedComment, CommentRepo
 
 	public Flux<FeedComment> getAll(Integer page, Integer size, String postId) {
 		return ElasticsearchBuilder.create(
-				FeedComment.class,
-				PageRequest.of(page, size),
-				operations
-		).modifyQuery(builder ->
-				builder.must(mustBuilder -> mustBuilder.term(TermQuery.of(
-										termQueryBuilder -> termQueryBuilder.field("postId.keyword").value(postId)
-								)
-						)
-				)
-		).doSearch();
+						FeedComment.class,
+						PageRequest.of(page, size),
+						operations
+				).must(TermQuery.of(
+						termQueryBuilder -> termQueryBuilder.field("postId.keyword").value(postId))._toQuery())
+				.doSearch();
 	}
 }

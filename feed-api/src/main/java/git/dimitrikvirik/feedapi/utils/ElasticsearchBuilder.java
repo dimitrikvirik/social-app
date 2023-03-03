@@ -36,40 +36,58 @@ public class ElasticsearchBuilder {
 
 		private final ReactiveElasticsearchOperations operations;
 
+		private final List<Query> musts = new ArrayList<>();
 
-		private Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>> builder;
+		private final List<Query> should = new ArrayList<>();
 
-		public Builder<T> modifyQuery(Function<BoolQuery.Builder, BoolQuery.Builder> fn) {
-			if (builder == null)
-				initBuilder();
+		private Integer minimumShouldMatch = 1;
 
 
-			builder = builder.compose(fn);
+		private Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>> boolBuilder;
+
+
+		public Builder<T> must(Query query) {
+			musts.add(query);
 			return this;
 		}
 
+		public Builder<T> should(Query query) {
+			should.add(query);
+			return this;
+		}
+
+		public Builder<T> minimumShouldMatch(Integer minimumShouldMatch) {
+			this.minimumShouldMatch = minimumShouldMatch;
+			return this;
+		}
+
+
 		private void initBuilder() {
-			builder = (builder) -> {
+			boolBuilder = (builder) -> {
 
 				if (searchText == null || searchText.isBlank()) {
-					builder.must(MatchAllQuery.of(matchBuilder -> matchBuilder.boost(1.0f))._toQuery());
+					musts.add(MatchAllQuery.of(matchBuilder -> matchBuilder.boost(1.0f))._toQuery());
+					builder.must(musts);
 				} else {
-					builder.minimumShouldMatch("1")
-							.should(
-									searchingFields.stream()
-											.map(field -> MatchQuery.of(shouldBuilder -> shouldBuilder.field(field).query(searchText).fuzziness("2").operator(Operator.And).query(searchText))._toQuery())
-											.toList()
-							).boost(20.0f);
+					List<Query> queries = new ArrayList<>(searchingFields.stream()
+							.map(field -> MatchQuery.of(shouldBuilder -> shouldBuilder.field(field).query(searchText).fuzziness("2").operator(Operator.And).query(searchText))._toQuery())
+							.toList());
+
+					should.addAll(queries);
+					builder.minimumShouldMatch(minimumShouldMatch.toString());
+
 				}
+				builder.should(should).boost(20.0f);
+
 				return builder;
 			};
 		}
 
 		public Flux<T> doSearch() {
-			if (builder == null)
+			if (boolBuilder == null)
 				initBuilder();
 
-			var boolQuery = BoolQuery.of(getBuilder());
+			var boolQuery = BoolQuery.of(getBoolBuilder());
 
 
 			Sort sort = Sort.by(Sort.Direction.DESC, "_score");

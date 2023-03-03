@@ -34,12 +34,9 @@ public class ReactionService extends AbstractUserService<FeedReaction, ReactionR
 				FeedReaction.class,
 				PageRequest.of(page, size),
 				operations
-		).modifyQuery(builder ->
-				builder.must(mustBuilder -> mustBuilder.term(TermQuery.of(
-										termQueryBuilder -> termQueryBuilder.field("postId.keyword").value(postId)
-								)
-						)
-				)
+		).must(TermQuery.of(
+						termQueryBuilder -> termQueryBuilder.field("postId.keyword").value(postId)
+				)._toQuery()
 		).doSearch();
 	}
 
