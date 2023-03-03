@@ -100,6 +100,8 @@ public class UserFacade {
 		User user = userService.findById(id);
 		user.setEmail(emailHash.getEmail());
 		userService.save(user);
+
+		keycloakService.changeEmail(user.getKeycloakId(), emailHash.getEmail());
 	}
 
 	public UserResponse uploadUserPhoto(String id, MultipartFile file) {

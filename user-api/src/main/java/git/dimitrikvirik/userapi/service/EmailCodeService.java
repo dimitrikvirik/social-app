@@ -68,9 +68,9 @@ public class EmailCodeService {
 		EmailCode emailCode = getByEmail(email).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not send")
 		);
-		if (!(emailCode.getCode().equals(code)) && emailCode.getType().equals(
+		if (!(emailCode.getCode().equals(code) && emailCode.getType().equals(
 				type
-		)) {
+		))) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email code is not valid");
 		}
 	}

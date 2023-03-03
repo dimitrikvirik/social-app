@@ -21,7 +21,7 @@ public class UserController implements UserApi {
 	private final UserFacade userFacade;
 
 	@Override
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('admin')")
 	public ResponseEntity<Void> blockUser(String id) {
 		userFacade.blockUser(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -52,7 +52,7 @@ public class UserController implements UserApi {
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('admin')")
 	public ResponseEntity<Void> unblockUser(String id) {
 		userFacade.unblockUser(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);

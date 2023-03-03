@@ -725,13 +725,7 @@ components:
       properties:
         emailHash:
           type: string
-        password:
-          type: string
-          format: password
-        firstName:
-          type: string
-        lastName:
-          type: string
+
     ForgetPasswordRequest:
       type: object
       properties:

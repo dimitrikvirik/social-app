@@ -39,10 +39,13 @@ public class AuthFacade {
 		if (emailCodeService.getByEmail(emailValidationRequest.getEmail()).isPresent()) {
 			emailCodeService.delete(emailValidationRequest.getEmail());
 		}
-		if (emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.REGISTER) &&
+		if ((emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.REGISTER) || emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.CHANGEEMAIL)) &&
 				userService.existsByEmail(emailValidationRequest.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists");
-		} else if (!emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.REGISTER) && !userService.existsByEmail(emailValidationRequest.getEmail())) {
+		} else if (
+				(emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.RESETPASSWORD) ||
+						emailValidationRequest.getType().equals(EmailValidationRequest.TypeEnum.RESTOREACCOUNT))
+						&& !userService.existsByEmail(emailValidationRequest.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email not found");
 		}
 

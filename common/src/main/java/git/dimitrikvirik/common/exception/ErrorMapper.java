@@ -41,15 +41,21 @@ public class ErrorMapper {
 		var status = HttpStatus.BAD_REQUEST.name();
 
 
-		InvalidFormatException invalidFormatException = (InvalidFormatException) e.getMostSpecificCause();
-		Class<?> targetType = invalidFormatException.getTargetType();
+		Throwable mostSpecificCause = e.getMostSpecificCause();
+		String msg;
+		if (mostSpecificCause instanceof InvalidFormatException invalidFormatException) {
+			Class<?> targetType = invalidFormatException.getTargetType();
 
-		String simpleName = targetType.getSimpleName();
-		String msg = invalidFormatException.getValue() + " can't be parsed to " + simpleName + ".";
-		if (targetType.isEnum()) {
-			String fields = Arrays.stream(targetType.getFields()).map(Field::getName).collect(Collectors.joining(", "));
-			msg += simpleName + " must be one of this: " + fields;
+			String simpleName = targetType.getSimpleName();
+			msg = invalidFormatException.getValue() + " can't be parsed to " + simpleName + ".";
+			if (targetType.isEnum()) {
+				String fields = Arrays.stream(targetType.getFields()).map(Field::getName).collect(Collectors.joining(", "));
+				msg += simpleName + " must be one of this: " + fields;
+			}
+		} else {
+			msg = mostSpecificCause.getMessage();
 		}
+
 
 		return new ErrorResponse(msg, application_name, method_name, exception_name, path, status);
 	}

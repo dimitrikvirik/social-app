@@ -134,6 +134,14 @@ public class KeycloakService {
 		UsersResource usersResource = getUsersResource();
 		usersResource.get(keycloakId).logout();
 	}
+
+	public void changeEmail(String keycloakId, String email) {
+		UsersResource usersResource = getUsersResource();
+		UserRepresentation userRepresentation = usersResource.get(keycloakId).toRepresentation();
+		userRepresentation.setEmail(email);
+		userRepresentation.setUsername(email);
+		usersResource.get(keycloakId).update(userRepresentation);
+	}
 }
 
 

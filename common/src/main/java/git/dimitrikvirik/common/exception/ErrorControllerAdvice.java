@@ -89,6 +89,13 @@ public class ErrorControllerAdvice {
 		return new ResponseEntity<>(ErrorMapper.of(ex, applicationName, methodName, exceptionName, request.getRequestURI()), HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException ex, HandlerMethod handlerMethod, HttpServletRequest request) {
+		String exceptionName = ex.getClass().getName();
+		String methodName = handlerMethod.getMethod().getName();
+		return new ResponseEntity<>(ErrorMapper.of(ex, applicationName, methodName, exceptionName, request.getRequestURI()), HttpStatus.BAD_REQUEST);
+	}
+
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> otherExceptionHandler(Exception ex,
