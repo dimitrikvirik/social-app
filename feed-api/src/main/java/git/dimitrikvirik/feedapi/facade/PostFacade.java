@@ -46,7 +46,6 @@ public class PostFacade {
 	private final ReactiveKafkaProducerTemplate<String, PaymentKafka> producerTemplate;
 
 
-
 	@PostConstruct
 	public void registerConsumer() {
 		consumerTemplate.receiveAutoAck()
@@ -82,7 +81,9 @@ public class PostFacade {
 				.zipWhen(post -> {
 					if (post.getTopics().isEmpty())
 						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics cannot be empty"));
-					return topicService.findAllByIds(post.getTopics()).collectList();
+					return topicService.findAllByIds(post.getTopics()).switchIfEmpty(
+							Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
+					).collectList();
 				})
 				.zipWith(userService.currentUser())
 				.map(tuple -> {
