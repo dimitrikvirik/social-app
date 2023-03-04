@@ -28,8 +28,14 @@ services:
       - social-net
     ports:
       - 7001:8080
+    command: [
+      "start-keycloak.sh",
+      "-b",
+      "0.0.0.0",
+      "-Dkeycloak.profile.feature.upload_scripts=enabled",
+      "-Dkeycloak.import=/config/realm-export.json"
+    ]
     environment:
-      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.profile.feature.scripts=enabled -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.import=/config/realm-export.json
       KEYCLOAK_DATABASE_HOST: postgres
       KEYCLOAK_DATABASE_NAME: keycloak
       KEYCLOAK_DATABASE_USER: postgres
