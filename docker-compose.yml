@@ -23,19 +23,19 @@ services:
     restart: always
     image:  quay.io/keycloak/keycloak:latest
     volumes:
-      - ./imports:/opt/jboss/keycloak/imports
+      - ./imports:/opt/keycloak/data/import
     networks:
       - social-net
-    #command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0
     ports:
       - 7001:8080
+    command:
+      -  start-dev --import-realm
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      KEYCLOAK_USER: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KEYCLOAK_ADMIN_PASSWORD: admin
       KEYCLOAK_PASSWORD: admin
   redis:
     restart: always
