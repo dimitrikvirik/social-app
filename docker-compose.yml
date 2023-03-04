@@ -29,7 +29,7 @@ services:
     ports:
       - 7001:8080
     command: [
-      "start-keycloak.sh",
+      "/opt/bitnami/keycloak/bin/start-keycloak.sh",
       "-b",
       "0.0.0.0",
       "-Dkeycloak.profile.feature.upload_scripts=enabled",
