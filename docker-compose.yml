@@ -21,7 +21,7 @@ services:
       - ./imports/postgres-init.sh:/docker-entrypoint-initdb.d/init_db.sh
   keycloak:
     restart: always
-    image: bitnami/keycloak:latest
+    image: bitnami/keycloak:18.0.0
     volumes:
       - ./imports/realm-export.json:/tmp/realm-export.json
     networks:
