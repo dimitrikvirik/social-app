@@ -144,6 +144,7 @@ services:
     environment:
       - CONFIG_SERVER=http://config:8081
       - SPRING_PROFILES_ACTIVE=docker
+      - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
     depends_on:
       - gateway
   payment:

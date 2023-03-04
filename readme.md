@@ -54,13 +54,16 @@ run keycloak and postgres:
 
 Open http://localhost:7001/admin/master/console/ in browser, login with username: admin, password: admin
 Create a new client: social.
-enable Client authentication and Authorization
+enable Client authentication and Authorization. enable Implicit flow
 Set Valid redirect URIs * and Web Origins *.
 
 open social client and copy client secret from Credentials.
 
 open Client scopes and click social-dedicated. Click Add mapper and choose By configuration.
-then choose User Attribute. set userId in name, user Attribute and Token Claim Name
-Enable add to ID Token and Add to Access Token, then save.
+then choose User Attribute. set userId in name, user Attribute and Token Claim Name.Enable add to ID Token and Add to Access Token, then save.
 
 paste client secret to .env file.
+
+## 3. Run
+
+    docker-compose up -d
