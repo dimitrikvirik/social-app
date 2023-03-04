@@ -21,7 +21,7 @@ services:
       - ./imports/postgres-init.sh:/docker-entrypoint-initdb.d/init_db.sh
   keycloak:
     restart: always
-    image: jboss/keycloak:latest
+    image: bitnami/keycloak:latest
     volumes:
       - ./imports:/opt/jboss/keycloak/imports
     networks:
