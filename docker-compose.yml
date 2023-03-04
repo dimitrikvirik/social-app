@@ -29,6 +29,7 @@ services:
    # command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
       - 7001:8080
+      - 7002:80
     environment:
       KC_IMPORT_ENABLED: "true"
       DB_VENDOR: POSTGRES
