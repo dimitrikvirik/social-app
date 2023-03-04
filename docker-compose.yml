@@ -21,29 +21,23 @@ services:
       - ./imports/postgres-init.sh:/docker-entrypoint-initdb.d/init_db.sh
   keycloak:
     restart: always
-    image: bitnami/keycloak:18.0.0
+    image:  quay.io/keycloak/keycloak:latest
     volumes:
-      - ./imports/realm-export.json:/tmp/realm-export.json
+      - ./imports:/opt/jboss/keycloak/imports
     networks:
       - social-net
+    command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0
     ports:
       - 7001:8080
-    #    command: [
-    #      "/opt/bitnami/keycloak/bin/start-keycloak.sh",
-    #      "-b",
-    #      "0.0.0.0",
-    #      "-Dkeycloak.profile.feature.upload_scripts=enabled",
-    #      "-Dkeycloak.import=/tmp/realm-export.json"
-    #    ]
     environment:
-      KEYCLOAK_EXTRA_ARGS:  -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.import=/tmp/realm-export.json
-      KEYCLOAK_IMPORT: /tmp/realm-export
-      KEYCLOAK_DATABASE_HOST: postgres
-      KEYCLOAK_DATABASE_NAME: keycloak
-      KEYCLOAK_DATABASE_USER: postgres
-      KEYCLOAK_DATABASE_PASSWORD: postgres
-      KEYCLOAK_ADMIN_USER: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_IMPORT_ENABLED: true
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
   redis:
     restart: always
     image: redis:latest
