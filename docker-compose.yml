@@ -22,8 +22,8 @@ services:
   keycloak:
     restart: always
     image: bitnami/keycloak:latest
-    volumes:
-      - ./imports:/opt/jboss/keycloak/imports
+#    volumes:
+#      - ./imports:/opt/jboss/keycloak/imports
     networks:
       - social-net
    # command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled
@@ -36,8 +36,8 @@ services:
       DB_DATABASE: keycloak
       DB_USER: postgres
       DB_PASSWORD: postgres
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+#      KEYCLOAK_USER: admin
+#      KEYCLOAK_PASSWORD: admin
   redis:
     restart: always
     image: redis:latest
