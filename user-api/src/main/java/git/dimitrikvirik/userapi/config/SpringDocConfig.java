@@ -53,7 +53,7 @@ public class SpringDocConfig {
 										.implicit(new OAuthFlow()
 												.authorizationUrl(authUrl + "/auth")
 												.scopes(new Scopes()
-														.addString("openid", "openid"))))))
+														.addString("offline_access", "offline_access"))))))
 				.security(List.of(new SecurityRequirement().addList("spring_oauth")));
 	}
 
