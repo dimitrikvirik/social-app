@@ -20,41 +20,38 @@ public class SpringDocConfig {
 
 	@Bean
 	OpenAPI openAPI() {
-		OpenAPI openAPI = new OpenAPI()
+		String authUrl = issuerUri + "/protocol/openid-connect";
+
+		Components components = new Components()
+				.addSecuritySchemes("bearerAuth",
+						new SecurityScheme()
+								.name("bearerAuth")
+								.type(SecurityScheme.Type.HTTP)
+								.scheme("bearer")
+								.bearerFormat("JWT")
+				);
+		components.addSecuritySchemes("spring_oauth", new SecurityScheme()
+				.type(SecurityScheme.Type.OAUTH2)
+				.description("Oauth2 flow")
+				.flows(new OAuthFlows()
+						.implicit(new OAuthFlow()
+								.authorizationUrl(authUrl + "/auth")
+								.scopes(new Scopes()
+										.addString("offline_access", "offline_access")))));
+
+		return new OpenAPI()
 				.info(new Info()
 						.title("User API")
 						.version("1.0.0")
 						.description("User API"))
 				.servers(List.of(new Server().url("/user/")))
 				.components(
-						new Components()
-								.addSecuritySchemes("bearerAuth",
-										new SecurityScheme()
-												.name("bearerAuth")
-												.type(SecurityScheme.Type.HTTP)
-												.scheme("bearer")
-												.bearerFormat("JWT")
-								)
-				);
-		addSecurity(openAPI);
-		return openAPI;
+						components
+				).security(List.of(new SecurityRequirement().addList("spring_oauth").addList("bearerAuth")));
+
+
 	}
 
-	private void addSecurity(OpenAPI openAPI) {
 
-
-		String authUrl = issuerUri + "/protocol/openid-connect";
-
-		openAPI.components(new Components()
-						.addSecuritySchemes("spring_oauth", new SecurityScheme()
-								.type(SecurityScheme.Type.OAUTH2)
-								.description("Oauth2 flow")
-								.flows(new OAuthFlows()
-										.implicit(new OAuthFlow()
-												.authorizationUrl(authUrl + "/auth")
-												.scopes(new Scopes()
-														.addString("offline_access", "offline_access"))))))
-				.security(List.of(new SecurityRequirement().addList("spring_oauth")));
-	}
 
 }
