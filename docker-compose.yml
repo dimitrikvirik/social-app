@@ -37,8 +37,8 @@ services:
       DB_DATABASE: keycloak
       DB_USER: postgres
       DB_PASSWORD: postgres
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin1
+      KEYCLOAK_ADMIN_PASSWORD: admin1
   redis:
     restart: always
     image: redis:latest
