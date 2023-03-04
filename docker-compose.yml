@@ -23,7 +23,7 @@ services:
     restart: always
     image: bitnami/keycloak:latest
     volumes:
-      - ./imports:/config
+      - ./imports/realm-export.json:/tmp/realm-export.json
     networks:
       - social-net
     ports:
@@ -33,9 +33,10 @@ services:
       "-b",
       "0.0.0.0",
       "-Dkeycloak.profile.feature.upload_scripts=enabled",
-      "-Dkeycloak.import=/config/realm-export.json"
+      "-Dkeycloak.import=/tmp/realm-export.json"
     ]
     environment:
+      KEYCLOAK_IMPORT: /tmp/realm-export
       KEYCLOAK_DATABASE_HOST: postgres
       KEYCLOAK_DATABASE_NAME: keycloak
       KEYCLOAK_DATABASE_USER: postgres
