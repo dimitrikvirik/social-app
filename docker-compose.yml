@@ -36,7 +36,7 @@ services:
     #      "-Dkeycloak.import=/tmp/realm-export.json"
     #    ]
     environment:
-      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.profile.feature.upload_scripts=enabled
+      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.import=/tmp/realm-export.json
       KEYCLOAK_IMPORT: /tmp/realm-export
       KEYCLOAK_DATABASE_HOST: postgres
       KEYCLOAK_DATABASE_NAME: keycloak
