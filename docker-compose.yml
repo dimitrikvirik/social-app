@@ -28,13 +28,13 @@ services:
       - social-net
     ports:
       - 7001:8080
-    command: [
-      "/opt/bitnami/keycloak/bin/start-keycloak.sh",
-      "-b",
-      "0.0.0.0",
-      "-Dkeycloak.profile.feature.upload_scripts=enabled",
-      "-Dkeycloak.import=/tmp/realm-export.json"
-    ]
+#    command: [
+#      "/opt/bitnami/keycloak/bin/start-keycloak.sh",
+#      "-b",
+#      "0.0.0.0",
+#      "-Dkeycloak.profile.feature.upload_scripts=enabled",
+#      "-Dkeycloak.import=/tmp/realm-export.json"
+#    ]
     environment:
       KEYCLOAK_IMPORT: /tmp/realm-export
       KEYCLOAK_DATABASE_HOST: postgres
