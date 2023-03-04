@@ -22,14 +22,14 @@ services:
   keycloak:
     restart: always
     image: bitnami/keycloak:latest
-#    volumes:
-#      - ./imports:/opt/jboss/keycloak/imports
+    volumes:
+      - ./imports:/config
     networks:
       - social-net
-   # command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
       - 7001:8080
     environment:
+      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.import=/config/realm-export.json
       KEYCLOAK_DATABASE_HOST: postgres
       KEYCLOAK_DATABASE_NAME: keycloak
       KEYCLOAK_DATABASE_USER: postgres
