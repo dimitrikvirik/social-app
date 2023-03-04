@@ -12,7 +12,6 @@ import git.dimitrikvirik.generated.feedapi.model.PostRequest;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
@@ -144,8 +143,8 @@ public class PostFacade {
 
 	}
 
-	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, ServerWebExchange exchange) {
-		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, searchText).map(PostMapper::toPostResponse)));
+	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, List<String> topics, ServerWebExchange exchange) {
+		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, topics, searchText).map(PostMapper::toPostResponse)));
 	}
 
 

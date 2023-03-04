@@ -120,6 +120,13 @@ paths:
           required: false
           schema:
             type: string
+        - name: topics
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: OK

@@ -1,7 +1,6 @@
 package git.dimitrikvirik.feedapi.service;
 
 import co.elastic.clients.elasticsearch._types.Script;
-import co.elastic.clients.elasticsearch._types.ScriptBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import git.dimitrikvirik.feedapi.model.domain.FeedPost;
 import git.dimitrikvirik.feedapi.repository.PostRepository;
@@ -10,14 +9,10 @@ import git.dimitrikvirik.feedapi.utils.TimeFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
-import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,8 +28,8 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 	}
 
 
-	public Flux<FeedPost> getAll(Integer page, Integer size, String searchText) {
-		return ElasticsearchBuilder.create(
+	public Flux<FeedPost> getAll(Integer page, Integer size, List<String> topics, String searchText) {
+		ElasticsearchBuilder.Builder<FeedPost> postBuilder = ElasticsearchBuilder.create(
 						FeedPost.class,
 						PageRequest.of(page, size),
 						List.of("title", "content"),
@@ -64,7 +59,10 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 										)))
 								))
 						))._toQuery()
-				)
+				);
+		topics.forEach(topic -> postBuilder.must(TermQuery.of(termBuilder -> termBuilder.field("topics.id").value(topic))._toQuery()));
+
+		return postBuilder
 				.doSearch();
 	}
 
