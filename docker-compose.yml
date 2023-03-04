@@ -22,14 +22,10 @@ services:
   keycloak:
     restart: always
     image:  quay.io/keycloak/keycloak:latest
-    volumes:
-      - ./imports:/opt/keycloak/data/import
     networks:
       - social-net
     ports:
       - 7001:8080
-    command:
-      -  start-dev --import-realm
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
