@@ -26,10 +26,10 @@ services:
       - ./imports:/opt/jboss/keycloak/imports
     networks:
       - social-net
+    command: bash /opt/jboss/keycloak/imports/keycloak-init.sh && /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0
     ports:
       - 7001:8080
     environment:
-      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/keycloak-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
       DB_DATABASE: keycloak
