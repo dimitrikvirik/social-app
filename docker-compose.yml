@@ -26,6 +26,8 @@ services:
       - social-net
     ports:
       - 7001:8080
+    command:
+      - start-dev
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
