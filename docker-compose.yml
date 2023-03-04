@@ -24,8 +24,8 @@ services:
     image: jboss/keycloak:latest
     volumes:
       - ./imports:/opt/jboss/keycloak/imports
-    command:
-      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
+#    command:
+#      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
     networks:
       - social-net
     ports:
