@@ -32,10 +32,6 @@
     ./gradlew notification-api:openApiGenerate
     ./gradlew notification-api:bootBuildImage
 
-# 2.Docker Compose
-
-    docker-compose up -d
-
 # 2. Configuration
 
 ## 2.1 Env File
@@ -60,10 +56,22 @@ Set Valid redirect URIs * and Web Origins *.
 open social client and copy client secret from Credentials.
 
 open Client scopes and click social-dedicated. Click Add mapper and choose By configuration.
-then choose User Attribute. set userId in name, user Attribute and Token Claim Name.Enable add to ID Token and Add to Access Token, then save.
+then choose User Attribute. set userId in name, user Attribute and Token Claim Name.Enable add to ID Token and Add to
+Access Token, then save.
 
 paste client secret to .env file.
 
-## 3. Run
+# 3. Run
 
     docker-compose up -d
+
+# 4.Doc
+
+## 4.1 Swagger
+
+    http://localhost:8080/swagger-ui
+
+## 4.2 Live Notification Test
+
+     http://localhost:8080/notification/test
+Enter Bearer Token and Click Connect

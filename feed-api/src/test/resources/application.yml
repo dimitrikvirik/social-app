@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: feed-api
+  profiles:
+    active: test
+  elasticsearch:
+    uris: http://localhost:9220
+  cloud:
+    config:
+      uri:
+      fail-fast: false
