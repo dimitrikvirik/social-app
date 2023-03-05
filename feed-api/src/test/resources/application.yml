@@ -7,3 +7,5 @@ spring:
     config:
       uri:
       fail-fast: false
+feed:
+  paymentBoostingCoef: 2
