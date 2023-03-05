@@ -27,7 +27,11 @@ class FeedPostControllerTest {
 
 
 	@Container
-	private static ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.5.3");
+	private static ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.5.3")
+			.withEnv("discovery.type", "single-node")
+			.withEnv("xpack.security.enabled", "false")
+			.withEnv("bootstrap.memory_lock", "true")
+			.withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
 
 	@DynamicPropertySource
 	static void configureElasticsearchContainer(DynamicPropertyRegistry registry) {
