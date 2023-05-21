@@ -30,7 +30,9 @@ public abstract class AbstractService<T, R extends ReactiveElasticsearchReposito
 	public Flux<T> findAllByIds(Iterable<String> ids) {
 		return repository.findAllById(ids);
 	}
-
+	public Flux<T> findAllByIds(Flux<String> ids) {
+		return repository.findAllById(ids);
+	}
 
 	public Mono<Void> delete(T entity) {
 		return repository.delete(entity);

@@ -22,6 +22,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -48,103 +49,105 @@ public class PostFacade {
 	@PostConstruct
 	public void registerConsumer() {
 		consumerTemplate.receiveAutoAck()
-				.filter(record -> record.value().getStatus().equals(PaymentStatus.PENDING))
-				.flatMap(record -> {
-					PaymentKafka payment = record.value();
-					String postId = payment.getResourceId();
-					return postService.getById(postId)
-							.flatMap(post -> {
-								post.setPaymentBoost(post.getPaymentBoost() + 1);
-								payment.setStatus(PaymentStatus.SUCCESS);
-								return postService.save(post).then(producerTemplate.send("payment", record.value()));
-							})
-							.onErrorResume(throwable -> {
-								payment.setStatus(PaymentStatus.FAILED);
-								if (throwable instanceof ResponseStatusException) {
-									payment.setReason(((ResponseStatusException) throwable).getReason());
-								} else {
-									payment.setReason("Server error");
-								}
+			.filter(record -> record.value().getStatus().equals(PaymentStatus.PENDING))
+			.flatMap(record -> {
+				PaymentKafka payment = record.value();
+				String postId = payment.getResourceId();
+				return postService.getById(postId)
+					.flatMap(post -> {
+						post.setPaymentBoost(post.getPaymentBoost() + 1);
+						payment.setStatus(PaymentStatus.SUCCESS);
+						return postService.save(post).then(producerTemplate.send("payment", record.value()));
+					})
+					.onErrorResume(throwable -> {
+						payment.setStatus(PaymentStatus.FAILED);
+						if (throwable instanceof ResponseStatusException) {
+							payment.setReason(((ResponseStatusException) throwable).getReason());
+						} else {
+							payment.setReason("Server error");
+						}
 
-								return producerTemplate.send("payment", record.value()).then(Mono.empty());
-							})
-							.log();
-				})
-				.log()
-				.subscribe();
+						return producerTemplate.send("payment", record.value()).then(Mono.empty());
+					})
+					.log();
+			})
+			.log()
+			.subscribe();
 	}
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
 		return postRequest
-				.zipWhen(post -> {
-					if (post.getTopics().isEmpty())
-						return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics cannot be empty"));
-					return topicService.findAllByIds(post.getTopics()).switchIfEmpty(
-							Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
-					).collectList();
-				})
-				.zipWith(userService.currentUser())
-				.map(tuple -> {
-					FeedUser feedUser = tuple.getT2();
-					List<FeedTopic> topics = tuple.getT1().getT2();
-					PostRequest request = tuple.getT1().getT1();
-					return FeedPost.builder()
-							.id(UUID.randomUUID().toString())
-							.title(request.getTitle())
-							.like(0)
-							.dislike(0)
-							.paymentBoost(0)
-							.commentCount(0)
-							.content(request.getContent())
-							.topics(topics)
-							.feedUser(feedUser)
-							.createdAt(ZonedDateTime.now())
-							.updatedAt(ZonedDateTime.now())
-							.build();
-				}).flatMap(postService::save).map(PostMapper::toPostResponseEntityCreated);
+			.zipWhen(post -> {
+				if (post.getTopics().isEmpty())
+					return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics cannot be empty"));
+				return topicService.findAllByIds(post.getTopics()).switchIfEmpty(
+					Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
+				).collectList();
+			})
+			.zipWith(userService.currentUser())
+			.map(tuple -> {
+				FeedUser feedUser = tuple.getT2();
+				List<FeedTopic> topics = tuple.getT1().getT2();
+				PostRequest request = tuple.getT1().getT1();
+				return FeedPost.builder()
+					.id(UUID.randomUUID().toString())
+					.title(request.getTitle())
+					.like(0)
+					.dislike(0)
+					.paymentBoost(0)
+					.commentCount(0)
+					.content(request.getContent())
+					.topics(topics)
+					.feedUser(feedUser)
+					.createdAt(ZonedDateTime.now())
+					.updatedAt(ZonedDateTime.now())
+					.build();
+			}).flatMap(postService::save).map(PostMapper::toPostResponseEntityCreated);
 	}
 
 
 	public Mono<ResponseEntity<Void>> deletePost(String id, ServerWebExchange exchange) {
 		return postService.getByIdValidated(id)
-				.flatMap(postService::delete)
-				.then(reactionService.deleteAllByPostId(id))
-				.then(commentService.deleteAllByPostId(id))
-				.then(Mono.just(ResponseEntity.noContent().build()));
+			.flatMap(postService::delete)
+			.then(reactionService.deleteAllByPostId(id))
+			.then(commentService.deleteAllByPostId(id))
+			.then(Mono.just(ResponseEntity.noContent().build()));
 	}
 
 
 	public Mono<ResponseEntity<PostResponse>> getPostById(String id, ServerWebExchange exchange) {
 		return postService.getById(id)
-				.map(PostMapper::toPostResponseEntityOk)
-				.defaultIfEmpty(ResponseEntity.notFound().build());
+			.map(PostMapper::toPostResponseEntityOk)
+			.defaultIfEmpty(ResponseEntity.notFound().build());
 
 	}
 
 	public Mono<ResponseEntity<PostResponse>> updatePost(String id, Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
 		return postRequest.zipWhen(post -> topicService.findAllByIds(post.getTopics()).switchIfEmpty(
-				Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
+			Flux.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Topics not found"))
 		).collectList()).zipWith(
-				postService.getByIdValidated(id)
+			postService.getByIdValidated(id)
 		).flatMap(
-				tuple -> {
-					PostRequest request = tuple.getT1().getT1();
-					FeedPost feedPost = tuple.getT2();
-					feedPost.setTitle(request.getTitle());
-					feedPost.setContent(request.getContent());
-					feedPost.setTopics(tuple.getT1().getT2());
-					feedPost.setUpdatedAt(ZonedDateTime.now());
-					return postService.save(feedPost);
-				}
+			tuple -> {
+				PostRequest request = tuple.getT1().getT1();
+				FeedPost feedPost = tuple.getT2();
+				feedPost.setTitle(request.getTitle());
+				feedPost.setContent(request.getContent());
+				feedPost.setTopics(tuple.getT1().getT2());
+				feedPost.setUpdatedAt(ZonedDateTime.now());
+				return postService.save(feedPost);
+			}
 		).map(PostMapper::toPostResponseEntityOk);
 
 
 	}
 
-	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, List<String> topics, ServerWebExchange exchange) {
-		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, topics, searchText).map(PostMapper::toPostResponse)));
+	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, OffsetDateTime createdAtBefore, List<String> topics, ServerWebExchange exchange) {
+
+
+		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, createdAtBefore, topics, searchText).map(PostMapper::toPostResponse)));
 	}
 
 

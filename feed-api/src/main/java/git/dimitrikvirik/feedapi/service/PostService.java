@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperatio
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -28,42 +29,44 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 	}
 
 
-	public Flux<FeedPost> getAll(Integer page, Integer size, List<String> topics, String searchText) {
+	public Flux<FeedPost> getAll(Integer page, Integer size, OffsetDateTime createdAtBefore, List<String> topics, String searchText) {
 		ElasticsearchBuilder.Builder<FeedPost> postBuilder = ElasticsearchBuilder.create(
-						FeedPost.class,
-						PageRequest.of(page, size),
-						List.of("title", "content"),
-						searchText,
-						operations
-				)
-				.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").from(ZonedDateTime.now().minusDays(2).format(TimeFormat.zoneDateTime)))._toQuery())
-				.minimumShouldMatch(2)
-				.should(FunctionScoreQuery.of(functionScoreBuilder -> functionScoreBuilder
-						.functions(FunctionScore.of(functionBuilder ->
-								functionBuilder.scriptScore(ScriptScoreFunction.of(
-										scriptScore -> scriptScore.script(Script.of(
-												script -> script.inline(
-														inline ->
-																inline.source("""
-																		def score = _score;
-																		 score +=  doc['paymentBoost'].size() == 0 ? 1 : doc['paymentBoost'].value * """ + paymentBoostingCoef + """
-																		         ;
-																		         def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
-																		           if(disAndLike > 0 ){
-																		              score += disAndLike;
-																		           }
-																		         score;
-																		\s
-																		""")
-												)
-										)))
-								))
-						))._toQuery()
-				);
+				FeedPost.class,
+				PageRequest.of(page, size),
+				List.of("title", "content"),
+				searchText,
+				operations
+			)
+			.minimumShouldMatch(2)
+			.should(FunctionScoreQuery.of(functionScoreBuilder -> functionScoreBuilder
+				.functions(FunctionScore.of(functionBuilder ->
+					functionBuilder.scriptScore(ScriptScoreFunction.of(
+						scriptScore -> scriptScore.script(Script.of(
+							script -> script.inline(
+								inline ->
+									inline.source("""
+										def score = _score;
+										 score +=  doc['paymentBoost'].size() == 0 ? 1 : doc['paymentBoost'].value * """ + paymentBoostingCoef + """
+										         ;
+										         def disAndLike = ((doc['like'].value * 1.5 )- doc['dislike'].value);
+										           if(disAndLike > 0 ){
+										              score += disAndLike;
+										           }
+										         score;
+										\s
+										""")
+							)
+						)))
+					))
+				))._toQuery()
+			);
+
+		if (createdAtBefore != null)
+			postBuilder.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").to(createdAtBefore.format(TimeFormat.zoneDateTime)))._toQuery());
 		topics.forEach(topic -> postBuilder.must(TermQuery.of(termBuilder -> termBuilder.field("topics.id").value(topic))._toQuery()));
 
 		return postBuilder
-				.doSearch();
+			.doSearch();
 	}
 
 

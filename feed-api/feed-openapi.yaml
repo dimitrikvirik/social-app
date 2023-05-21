@@ -120,6 +120,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: createdAtBefore
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
         - name: topics
           in: query
           required: false

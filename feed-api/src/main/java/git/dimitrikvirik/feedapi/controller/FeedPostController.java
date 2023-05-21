@@ -11,6 +11,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -31,8 +32,8 @@ public class FeedPostController implements PostApi {
 
 
 	@Override
-	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, List<String> topics, ServerWebExchange exchange) {
-		return postFacade.getAllPosts(page, size, searchText, topics, exchange);
+	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, OffsetDateTime createdAtBefore, List<String> topics, ServerWebExchange exchange) {
+		return postFacade.getAllPosts(page, size, searchText, createdAtBefore, topics, exchange);
 	}
 
 	@Override
