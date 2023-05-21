@@ -53,8 +53,7 @@ public class SecurityConfig {
 				.anyExchange().authenticated()
 				.and()
 				.oauth2ResourceServer()
-				.jwt().jwtA
-	uthenticationConverter(jwtAuthenticationConverter);
+				.jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);
 
 		return http.build();
 	}
