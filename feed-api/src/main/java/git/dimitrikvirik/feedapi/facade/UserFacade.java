@@ -1,6 +1,7 @@
 package git.dimitrikvirik.feedapi.facade;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import git.dimitrikvirik.feedapi.mapper.UserMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
 import git.dimitrikvirik.feedapi.model.kafka.UserKafka;
 import git.dimitrikvirik.feedapi.service.UserService;
@@ -53,4 +54,9 @@ public class UserFacade {
 						.build()
 				)).log().defaultIfEmpty(ResponseEntity.notFound().build());
 	}
+
+	public Mono<ResponseEntity<UserResponse>> createUser(FeedUser user) {
+		return userService.save(user).map(u -> ResponseEntity.ok(UserMapper.fromUser(u)));
+	}
+
 }
