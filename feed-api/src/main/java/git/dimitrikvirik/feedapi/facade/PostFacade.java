@@ -77,6 +77,9 @@ public class PostFacade {
 
 	public Mono<ResponseEntity<PostResponse>> createPost(Mono<PostRequest> postRequest, ServerWebExchange exchange) {
 
+		Mono<List<String>> ids = postRequest.map(PostRequest::getTopics);
+		Flux<FeedTopic> topics1 = ids.flatMapMany(topicService::findAllByIds);
+
 		return postRequest
 			.zipWhen(post -> {
 				if (post.getTopics().isEmpty())
@@ -147,7 +150,8 @@ public class PostFacade {
 	public Mono<ResponseEntity<Flux<PostResponse>>> getAllPosts(Integer page, Integer size, String searchText, OffsetDateTime createdAtBefore, List<String> topics, ServerWebExchange exchange) {
 
 
-		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, createdAtBefore, topics, searchText).map(PostMapper::toPostResponse)));
+		return Mono.just(ResponseEntity.ok().body(postService.getAll(page, size, createdAtBefore, topics, searchText)
+			.map(PostMapper::toPostResponse)));
 	}
 
 
