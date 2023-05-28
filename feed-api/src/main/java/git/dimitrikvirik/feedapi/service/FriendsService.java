@@ -53,10 +53,10 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 		return NativeQuery.builder()
 			.withQuery(q -> q.bool(
 				b -> b
-					.should(s -> s.term(termQuery("userOneId", userIdValue)))
-					.should(s -> s.term(termQuery("userTwoId", userIdValue)))
+					.should(termQuery("userOneId", userIdValue)._toQuery())
+					.should(termQuery("userTwoId", userIdValue)._toQuery())
 					.minimumShouldMatch("1")
-					.filter(f -> f.terms(termsQuery("status", statusValues)))))
+					.filter(termsQuery("status", statusValues)._toQuery())))
 			.withPageable(pageRequest)
 			.build();
 	}
@@ -70,14 +70,14 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 			.withQuery(q -> q.bool(
 				b -> b
 					.must(m -> m.bool(mq -> mq
-						.should(s -> s.term(termQuery("userOneId", firstUserIdValue)))
-						.should(s -> s.term(termQuery("userTwoId", firstUserIdValue)))
+						.should(termQuery("userOneId", firstUserIdValue)._toQuery())
+						.should(termQuery("userTwoId", firstUserIdValue)._toQuery())
 						.minimumShouldMatch("1")))
 					.must(m -> m.bool(mq -> mq
-						.should(s -> s.term(termQuery("userOneId", secondUserIdValue)))
-						.should(s -> s.term(termQuery("userTwoId", secondUserIdValue)))
+						.should(termQuery("userOneId", secondUserIdValue)._toQuery())
+						.should(termQuery("userTwoId", secondUserIdValue)._toQuery())
 						.minimumShouldMatch("1")))
-					.filter(f -> f.terms(termsQuery("status", statusValues)))))
+					.filter(termsQuery("status", statusValues)._toQuery())))
 			.build();
 	}
 
