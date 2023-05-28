@@ -6,9 +6,7 @@ import git.dimitrikvirik.generated.feedapi.model.TopicResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import git.dimitrikvirik.generated.feedapi.model.PostResponse;
-import reactor.core.publisher.Mono;
 
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 
@@ -35,7 +33,7 @@ public class PostMapper {
 				.updatedAt(post.getUpdatedAt().format(TimeFormat.zoneDateTime))
 				.unlike(post.getDislike())
 				.commentNumber(post.getCommentCount())
-				.user(UserMapper.fromUser(post.getFeedUser()))
+				.user(UserMapper.toUserResponse(post.getFeedUser()))
 				.topics(post.getTopics().stream().map(feedTopic ->
 						TopicResponse
 								.builder()
