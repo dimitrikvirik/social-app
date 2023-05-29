@@ -26,9 +26,7 @@ public class FriendsController {
 	@Operation(
 		description = "Get friends of current user",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "OK", content = {
-				@Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))
-			}),
+			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "400", description = "Bad Request", content = {
 				@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
 			}),
@@ -103,9 +101,7 @@ public class FriendsController {
 	@Operation(
 		description = "Remove friend",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "Ok", content = {
-				@Content(mediaType = "application/json", schema = @Schema(implementation = FriendRequestDTO.class))
-			}),
+			@ApiResponse(responseCode = "200", description = "Ok"),
 			@ApiResponse(responseCode = "400", description = "Bad Request", content = {
 				@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
 			}),
