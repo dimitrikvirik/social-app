@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 public class FeedFriends {
 
 	@Id
+	@Field(type = FieldType.Keyword, name = "id")
 	private String id;
 
 	@Field(type = FieldType.Keyword, name = "userOneId")

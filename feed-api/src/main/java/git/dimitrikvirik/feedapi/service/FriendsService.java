@@ -33,8 +33,20 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 		return repository.save(createFeedFriends(userOneId, userTwoId));
 	}
 
-	public Flux<FeedFriends> findActiveFriendsByUserId(String userId, Pageable pageRequest) {
-		List<FriendshipStatus> statuses = List.of(FriendshipStatus.ACCEPTED, FriendshipStatus.PENDING);
+	public Mono<FeedFriends> findFriendRequest(String requestId, List<FriendshipStatus> statuses) {
+		return repository.findByIdAndStatusIn(requestId, statuses);
+	}
+
+	public Mono<FeedFriends> updateFriendship(FeedFriends request, FriendshipStatus status) {
+		request.setStatus(status);
+		request.setUpdatedAt(ZonedDateTime.now());
+		return repository.save(request);
+	}
+
+	public Flux<FeedFriends> findFriendshipsByUser(String userId,
+												   List<FriendshipStatus> statuses,
+												   Pageable pageRequest) {
+
 		return operations.search(friendsOfUserQuery(userId, statuses, pageRequest), FeedFriends.class)
 			.map(SearchHit::getContent);
 	}
@@ -43,6 +55,11 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 													String secondUserId,
 													List<FriendshipStatus> statuses) {
 		return operations.search(friendsQuery(firstUserId, secondUserId, statuses), FeedFriends.class)
+			.map(SearchHit::getContent).next();
+	}
+
+	public Mono<FeedFriends> findIncomingRequest(String id, String receiverId, List<FriendshipStatus> statuses) {
+		return operations.search(incomingRequestQuery(id, receiverId, statuses), FeedFriends.class)
 			.map(SearchHit::getContent).next();
 	}
 
@@ -87,6 +104,20 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 						.should(termQuery("userOneId", secondUserIdValue)._toQuery())
 						.should(termQuery("userTwoId", secondUserIdValue)._toQuery())
 						.minimumShouldMatch("1")))
+					.filter(termsQuery("status", statusValues)._toQuery())))
+			.build();
+	}
+
+	private Query incomingRequestQuery(String id, String receiverId, List<FriendshipStatus> statuses) {
+		FieldValue idValue = FieldValue.of(id);
+		FieldValue userTwoIdValue = FieldValue.of(receiverId);
+		List<FieldValue> statusValues = statuses.stream().map(s -> FieldValue.of(s.name())).toList();
+
+		return NativeQuery.builder()
+			.withQuery(q -> q.bool(
+				b -> b
+					.filter(termQuery("id", idValue)._toQuery())
+					.filter(termQuery("userTwoId", userTwoIdValue)._toQuery())
 					.filter(termsQuery("status", statusValues)._toQuery())))
 			.build();
 	}
