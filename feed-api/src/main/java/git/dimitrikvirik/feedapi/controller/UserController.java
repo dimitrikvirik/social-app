@@ -43,7 +43,7 @@ public class UserController {
 		}
 	)
 	@GetMapping("/user/{id}")
-	public Mono<ResponseEntity<UserDTO>> getUserById(String id, ServerWebExchange exchange) {
+	public Mono<ResponseEntity<UserDTO>> getUserById(@PathVariable String id, ServerWebExchange exchange) {
 		return userFacade.getUserById(id, exchange);
 	}
 

@@ -3,7 +3,6 @@ package git.dimitrikvirik.feedapi.service;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
-import git.dimitrikvirik.feedapi.mapper.FriendsMapper;
 import git.dimitrikvirik.feedapi.model.domain.FeedFriends;
 import git.dimitrikvirik.feedapi.model.enums.FriendshipStatus;
 import git.dimitrikvirik.feedapi.repository.FeedFriendsRepository;
@@ -16,7 +15,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepository> {
@@ -28,10 +29,8 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 		this.operations = operations;
 	}
 
-	public Mono<FeedFriends> addFriend(String userOneId, String userTwoId) {
-		FeedFriends feedFriends = FriendsMapper.toFeedFriends(userOneId, userTwoId, FriendshipStatus.PENDING);
-
-		return repository.save(feedFriends);
+	public Mono<FeedFriends> createFriendRequest(String userOneId, String userTwoId) {
+		return repository.save(createFeedFriends(userOneId, userTwoId));
 	}
 
 	public Flux<FeedFriends> findActiveFriendsByUserId(String userId, Pageable pageRequest) {
@@ -40,10 +39,21 @@ public class FriendsService extends AbstractService<FeedFriends, FeedFriendsRepo
 			.map(SearchHit::getContent);
 	}
 
-	public Mono<FeedFriends> findActiveFriendsByUserIds(String firstUserId, String secondUserId) {
-		List<FriendshipStatus> statuses = List.of(FriendshipStatus.ACCEPTED, FriendshipStatus.PENDING);
+	public Mono<FeedFriends> findFriendshipForUsers(String firstUserId,
+													String secondUserId,
+													List<FriendshipStatus> statuses) {
 		return operations.search(friendsQuery(firstUserId, secondUserId, statuses), FeedFriends.class)
 			.map(SearchHit::getContent).next();
+	}
+
+	private FeedFriends createFeedFriends(String userOneId, String userTwoId) {
+		return FeedFriends.builder()
+			.id(UUID.randomUUID().toString())
+			.userOneId(userOneId)
+			.userTwoId(userTwoId)
+			.status(FriendshipStatus.PENDING)
+			.createdAt(ZonedDateTime.now())
+			.build();
 	}
 
 	private Query friendsOfUserQuery(String userId, List<FriendshipStatus> statuses, Pageable pageRequest) {

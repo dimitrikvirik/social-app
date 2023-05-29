@@ -230,6 +230,7 @@ components:
           enum:
             - REACTION
             - COMMENT
+            - FRIEND_REQUEST
         createdAt:
           type: string
     NotificationSettingDTO:
