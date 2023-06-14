@@ -1,18 +1,26 @@
 package git.dimitrikvirik.feedapi.facade;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import git.dimitrikvirik.feedapi.mapper.ResponseMapper;
 import git.dimitrikvirik.feedapi.mapper.UserMapper;
+import git.dimitrikvirik.feedapi.model.domain.FeedFriends;
 import git.dimitrikvirik.feedapi.model.domain.FeedUser;
+import git.dimitrikvirik.feedapi.model.dto.UserDTO;
+import git.dimitrikvirik.feedapi.model.enums.FriendshipStatus;
 import git.dimitrikvirik.feedapi.model.kafka.UserKafka;
+import git.dimitrikvirik.feedapi.service.FriendsService;
 import git.dimitrikvirik.feedapi.service.UserService;
 import git.dimitrikvirik.generated.feedapi.model.UserResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +28,7 @@ public class UserFacade {
 
 
 	private final UserService userService;
+	private final FriendsService friendsService;
 
 	private final ReactiveKafkaConsumerTemplate<String, UserKafka> kafkaTemplate;
 
@@ -27,36 +36,42 @@ public class UserFacade {
 	@PostConstruct
 	public void kafkaSubscribe() {
 		kafkaTemplate.receiveAutoAck().flatMap(value ->
-				{
+			{
 
-					UserKafka userKafka = value.value();
-					FeedUser feedUser = FeedUser.builder()
-							.firstname(userKafka.getFirstName())
-							.lastname(userKafka.getLastName())
-							.photo(userKafka.getProfile())
-							.id(userKafka.getId())
-							.build();
+				UserKafka userKafka = value.value();
+				FeedUser feedUser = FeedUser.builder()
+					.firstname(userKafka.getFirstName())
+					.lastname(userKafka.getLastName())
+					.photo(userKafka.getProfile())
+					.id(userKafka.getId())
+					.build();
 
 
-					return userService.save(feedUser);
-				}
+				return userService.save(feedUser);
+			}
 		).log().subscribe();
 	}
 
+	public Mono<ResponseEntity<UserDTO>> getUserById(String id, ServerWebExchange exchange) {
 
-	public Mono<ResponseEntity<UserResponse>> getUserById(String id, ServerWebExchange exchange) {
-		return userService.getById(id)
-				.map(user -> ResponseEntity.ok(UserResponse.builder()
-						.id(user.getId())
-						.firstname(user.getFirstname())
-						.lastname(user.getLastname())
-						.photo(user.getPhoto())
-						.build()
-				)).log().defaultIfEmpty(ResponseEntity.notFound().build());
+		List<FriendshipStatus> statuses =
+			List.of(FriendshipStatus.ACCEPTED, FriendshipStatus.PENDING, FriendshipStatus.REJECTED);
+
+		Mono<FeedUser> targetUser = userService.getById(id)
+			.switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")));
+
+		Mono<UserDTO> response = targetUser.zipWith(userService.currentUser())
+			.flatMap(t -> friendsService
+				.findFriendshipForUsers(t.getT1().getId(), t.getT2().getId(), statuses)
+				.defaultIfEmpty(new FeedFriends())
+				.map(f -> UserMapper.toUserDTO(t.getT1(), f.getStatus()))
+			);
+
+		return ResponseMapper.toResponseEntity(HttpStatus.OK, response);
 	}
 
 	public Mono<ResponseEntity<UserResponse>> createUser(FeedUser user) {
-		return userService.save(user).map(u -> ResponseEntity.ok(UserMapper.fromUser(u)));
+		return userService.save(user).map(u -> ResponseEntity.ok(UserMapper.toUserResponse(u)));
 	}
 
 }
