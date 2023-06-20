@@ -66,7 +66,7 @@ public class PostService extends AbstractUserService<FeedPost, PostRepository> {
 
 		if (createdAtBefore != null)
 			postBuilder.must(RangeQuery.of(rangeBuilder -> rangeBuilder.field("createdAt").to(createdAtBefore.format(TimeFormat.zoneDateTime)))._toQuery());
-		topics.forEach(topic -> postBuilder.must(TermQuery.of(termBuilder -> termBuilder.field("topics.id").value(topic))._toQuery()));
+		topics.forEach(topic -> postBuilder.must(TermQuery.of(termBuilder -> termBuilder.field("topics.id.keyword").value(topic))._toQuery()));
 
 		return postBuilder
 			.doSearch();
